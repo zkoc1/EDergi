@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EDergiAPI.Persistence.Migrations
 {
     [DbContext(typeof(EDergiAPIDbContext))]
-    partial class DergiAPIDbContextModelSnapshot : ModelSnapshot
+    partial class EDergiAPIDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -22,52 +22,85 @@ namespace EDergiAPI.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("EDergiAPI.Domain.Entitites.Customer", b =>
+            modelBuilder.Entity("ArticleIssue", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("ArticlesId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<Guid>("IssuesId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("ArticlesId", "IssuesId");
 
-                    b.HasKey("Id");
+                    b.HasIndex("IssuesId");
 
-                    b.ToTable("Customers");
+                    b.ToTable("ArticleIssue");
                 });
 
-            modelBuilder.Entity("EDergiAPI.Domain.Entitites.Product", b =>
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.Article", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("ArticleLink")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("Price")
-                        .HasColumnType("bigint");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("Stock")
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Keywords")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("MagazineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ProjectNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reference")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SupportingInstitution")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.HasIndex("MagazineId");
+
+                    b.ToTable("Articles");
                 });
 
-            modelBuilder.Entity("EDergiAPI.Domain.Entitites.deneme", b =>
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.Author", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Affiliation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ArticleId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedDate")
@@ -77,9 +110,393 @@ namespace EDergiAPI.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
-                    b.ToTable("denemes");
+                    b.HasIndex("ArticleId");
+
+                    b.ToTable("Authors");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.Issue", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ArticleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IssueNumber")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("VolumeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VolumeId");
+
+                    b.ToTable("Issues");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.MDocument", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("MagazineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MagazineId");
+
+                    b.ToTable("Documents");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.MNumberOf", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("MagazineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("NumberOf")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("VolumesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MagazineId");
+
+                    b.HasIndex("VolumesId");
+
+                    b.ToTable("MNumberOf");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.Magazine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ISSN")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JournalRules")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Period")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Purpose")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Scope")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ViewStatsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("WritingRules")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ViewStatsId");
+
+                    b.ToTable("Magazines");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.Publisher", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("MagazineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MagazineId");
+
+                    b.ToTable("Publishers");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.ReadIndex", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("MagazineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MagazineId");
+
+                    b.ToTable("ReadIndices");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.ViewStats", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DownloadCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FavoriteCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ViewCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ViewStats");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.Volume", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ArticleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArticleId");
+
+                    b.ToTable("Volume");
+                });
+
+            modelBuilder.Entity("ArticleIssue", b =>
+                {
+                    b.HasOne("DergiAPI.Domain.Entitites.Article", null)
+                        .WithMany()
+                        .HasForeignKey("ArticlesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DergiAPI.Domain.Entitites.Issue", null)
+                        .WithMany()
+                        .HasForeignKey("IssuesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.Article", b =>
+                {
+                    b.HasOne("DergiAPI.Domain.Entitites.Magazine", null)
+                        .WithMany("Articles")
+                        .HasForeignKey("MagazineId");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.Author", b =>
+                {
+                    b.HasOne("DergiAPI.Domain.Entitites.Article", null)
+                        .WithMany("Authors")
+                        .HasForeignKey("ArticleId");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.Issue", b =>
+                {
+                    b.HasOne("DergiAPI.Domain.Entitites.Volume", null)
+                        .WithMany("Issues")
+                        .HasForeignKey("VolumeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.MDocument", b =>
+                {
+                    b.HasOne("DergiAPI.Domain.Entitites.Magazine", null)
+                        .WithMany("Documents")
+                        .HasForeignKey("MagazineId");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.MNumberOf", b =>
+                {
+                    b.HasOne("DergiAPI.Domain.Entitites.Magazine", null)
+                        .WithMany("Archives")
+                        .HasForeignKey("MagazineId");
+
+                    b.HasOne("DergiAPI.Domain.Entitites.Volume", "Volumes")
+                        .WithMany()
+                        .HasForeignKey("VolumesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Volumes");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.Magazine", b =>
+                {
+                    b.HasOne("DergiAPI.Domain.Entitites.ViewStats", "ViewStats")
+                        .WithMany()
+                        .HasForeignKey("ViewStatsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ViewStats");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.Publisher", b =>
+                {
+                    b.HasOne("DergiAPI.Domain.Entitites.Magazine", null)
+                        .WithMany("Publishers")
+                        .HasForeignKey("MagazineId");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.ReadIndex", b =>
+                {
+                    b.HasOne("DergiAPI.Domain.Entitites.Magazine", null)
+                        .WithMany("Indexes")
+                        .HasForeignKey("MagazineId");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.Volume", b =>
+                {
+                    b.HasOne("DergiAPI.Domain.Entitites.Article", null)
+                        .WithMany("Volumes")
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.Article", b =>
+                {
+                    b.Navigation("Authors");
+
+                    b.Navigation("Volumes");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.Magazine", b =>
+                {
+                    b.Navigation("Archives");
+
+                    b.Navigation("Articles");
+
+                    b.Navigation("Documents");
+
+                    b.Navigation("Indexes");
+
+                    b.Navigation("Publishers");
+                });
+
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.Volume", b =>
+                {
+                    b.Navigation("Issues");
                 });
 #pragma warning restore 612, 618
         }
