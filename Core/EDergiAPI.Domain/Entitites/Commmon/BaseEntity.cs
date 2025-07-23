@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EDergiAPI.Domain.Entitites.Commmon
+namespace DergiAPI.Domain.Entitites.Commmon
 {
-	public class BaseEntity
+	public abstract class BaseEntity
 	{
-		public Guid Id { get; set; }
-		public DateTime CreatedDate { get; set; }
+		public Guid Id { get; set; } 
+		public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+		public DateTime? UpdatedDate { get; set; }
 	}
 }

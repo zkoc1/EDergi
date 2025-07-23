@@ -22,4 +22,8 @@
     <ProjectReference Include="..\..\Infrastructure\EDergiAPI.Persistence\EDergiAPI.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 </Project>

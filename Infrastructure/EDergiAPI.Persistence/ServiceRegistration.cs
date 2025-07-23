@@ -1,27 +1,38 @@
-﻿using EDergiAPI.Application.Abstractions;
-using EDergiAPI.Persistence.Concretes;
-using EDergiAPI.Persistence.Contexts;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using DergiAPI.Application.Abstractions;
+using DergiAPI.Application.Abstractions.Services;
+using DergiAPI.Application.Repostories;
+using DergiAPI.Persistence.Concretes;
+using DergiAPI.Persistence.Concretes.Services;
+using DergiAPI.Persistence.Repostories;
+using EDergiAPI.Application.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EDergiAPI.Persistence
+namespace DergiAPI.Persistence
 {
 	public static class ServiceRegistration
 	{
-		public static void AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
+		public static void AddPersistenceServices(this IServiceCollection services, Microsoft.Extensions.Configuration.ConfigurationManager configuration)
 		{
-			// Servislerin kaydı
-			services.AddScoped<IProductService, ProductService>();
+			// Servis katmanı bağımlılıkları
+			services.AddScoped<IArticleService, ArticleService>();
+			services.AddScoped<IArchiveService, ArchiveService>();
+			services.AddScoped<IArticleIssueService, ArticleIssueService>();
+			services.AddScoped<IAuthorService, AuthorService>();
+			services.AddScoped<IDocumentService, DocumentService>();
+			services.AddScoped<IReadIndexService, ReadIndexService>();
+			services.AddScoped<IIssueService, IssueService>();
+			services.AddScoped<IMagazineService, MagazineService>();	
+			services.AddScoped<IPublisherService,PublisherService>();
+			services.AddScoped<IPurposeScopeService, PurposeScopeService>();
+			services.AddScoped<IRulesService, RulesService>();
+			services.AddScoped<IViewStatsService, ViewStatsService>();
+			services.AddScoped<IWritingRulesService, WritingRulesService>();
 
-			// DbContext konfigürasyonu
-			services.AddDbContext<EDergiAPIDbContext>(options =>
-			{
-				// Burada "SqlConnection" ismi, appsettings.json içinde tanımlanan connection string adıdır
-				options.UseSqlServer(configuration.GetConnectionString("SqlConnection"));
-				options.EnableDetailedErrors();
-				options.EnableSensitiveDataLogging();
-			});
+
+
+			// Generic repository bağımlılıkları
+			services.AddScoped(typeof(IReadRepository<>), typeof(ReadRepository<>));
+			services.AddScoped(typeof(IWriteRepository<>), typeof(WriteRepository<>));
 		}
 	}
 }

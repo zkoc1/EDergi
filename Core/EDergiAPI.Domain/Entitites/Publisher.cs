@@ -1,14 +1,15 @@
-﻿using EDergiAPI.Domain.Entitites.Commmon;
+﻿
+using DergiAPI.Domain.Entitites.Commmon;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-namespace EDergiAPI.Domain.Entitites
+namespace DergiAPI.Domain.Entitites
 {
-	public class Customer : BaseEntity
+	public class Publisher : BaseEntity
 	{
+		
 		public string Name { get; set; }
 	}
 }

@@ -1,4 +1,4 @@
-﻿using EDergiAPI.Persistence;
+﻿using DergiAPI.Persistence;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
