@@ -10,7 +10,8 @@ namespace DergiAPI.Domain.Entitites
 	public class Volume : BaseEntity
 	{
 	
-		public int VolumeNumber { get; set; }
+		public string Title { get; set; } //cilt 1, cilt 2 olarak tanımlanabilir
+        public Guid ArticleId { get; set; }
 		public ICollection<Issue> Issues { get; set; }
 	}
 }

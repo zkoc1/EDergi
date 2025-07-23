@@ -11,5 +11,7 @@ namespace DergiAPI.Domain.Entitites
 	{
 		
 		public string Name { get; set; } // Örn: TR Dizin, Scopus vs.
+        public string ImageUrl { get; set; }
+        public string ImageName { get; set; }
 	}
 }

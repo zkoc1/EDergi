@@ -11,6 +11,8 @@ namespace DergiAPI.Domain.Entitites
 	{
 		
 		public int IssueNumber { get; set; }
+        public Guid VolumeId { get; set; }
+        public Guid ArticleId { get; set; }
 		public ICollection<Article> Articles { get; set; }
 	}
 }
