@@ -1,4 +1,5 @@
 ﻿using DergiAPI.Domain.Entitites;
+using DergiAPI.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,11 @@ namespace DergiAPI.Application.Repostories
 {
 	public class WriteRepository<T> : IWriteRepository<T> where T : class
 	{
+		protected readonly EDergiAPIDbContext _context;
+		public WriteRepository(EDergiAPIDbContext context)
+		{
+			_context = context;
+		}
 		public DbSet<T> Table => throw new NotImplementedException();
 
 		public Task<bool> Addasync(T model)
@@ -69,6 +75,11 @@ namespace DergiAPI.Application.Repostories
 		}
 
 		public Task AddAsync(Volume volume)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task AddAsync(ArticleIssue articleIssue)
 		{
 			throw new NotImplementedException();
 		}

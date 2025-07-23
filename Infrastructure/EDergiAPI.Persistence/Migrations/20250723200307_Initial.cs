@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EDergiAPI.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -84,7 +84,7 @@ namespace EDergiAPI.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Documents",
+                name: "MDocuments",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -96,9 +96,9 @@ namespace EDergiAPI.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Documents", x => x.Id);
+                    table.PrimaryKey("PK_MDocuments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Documents_Magazines_MagazineId",
+                        name: "FK_MDocuments_Magazines_MagazineId",
                         column: x => x.MagazineId,
                         principalTable: "Magazines",
                         principalColumn: "Id");
@@ -195,7 +195,6 @@ namespace EDergiAPI.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IssueNumber = table.Column<int>(type: "int", nullable: false),
                     VolumeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ArticleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -242,30 +241,38 @@ namespace EDergiAPI.Persistence.Migrations
                 name: "ArticleIssue",
                 columns: table => new
                 {
-                    ArticlesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IssuesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ArticleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IssueId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ArticleIssue", x => new { x.ArticlesId, x.IssuesId });
+                    table.PrimaryKey("PK_ArticleIssue", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ArticleIssue_Articles_ArticlesId",
-                        column: x => x.ArticlesId,
+                        name: "FK_ArticleIssue_Articles_ArticleId",
+                        column: x => x.ArticleId,
                         principalTable: "Articles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ArticleIssue_Issues_IssuesId",
-                        column: x => x.IssuesId,
+                        name: "FK_ArticleIssue_Issues_IssueId",
+                        column: x => x.IssueId,
                         principalTable: "Issues",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ArticleIssue_IssuesId",
+                name: "IX_ArticleIssue_ArticleId",
                 table: "ArticleIssue",
-                column: "IssuesId");
+                column: "ArticleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ArticleIssue_IssueId",
+                table: "ArticleIssue",
+                column: "IssueId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Articles_MagazineId",
@@ -278,11 +285,6 @@ namespace EDergiAPI.Persistence.Migrations
                 column: "ArticleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Documents_MagazineId",
-                table: "Documents",
-                column: "MagazineId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Issues_VolumeId",
                 table: "Issues",
                 column: "VolumeId");
@@ -291,6 +293,11 @@ namespace EDergiAPI.Persistence.Migrations
                 name: "IX_Magazines_ViewStatsId",
                 table: "Magazines",
                 column: "ViewStatsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MDocuments_MagazineId",
+                table: "MDocuments",
+                column: "MagazineId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MNumberOf_MagazineId",
@@ -328,7 +335,7 @@ namespace EDergiAPI.Persistence.Migrations
                 name: "Authors");
 
             migrationBuilder.DropTable(
-                name: "Documents");
+                name: "MDocuments");
 
             migrationBuilder.DropTable(
                 name: "MNumberOf");

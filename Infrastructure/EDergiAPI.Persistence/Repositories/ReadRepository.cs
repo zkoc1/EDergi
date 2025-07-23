@@ -1,4 +1,5 @@
 ﻿using DergiAPI.Application.Repostories;
+using DergiAPI.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,10 @@ namespace DergiAPI.Persistence.Repostories
 	public class ReadRepository<T> : IReadRepository<T> where T : class
 	{
 		private readonly DbContext _context;
+		public ReadRepository(EDergiAPIDbContext context)
+		{
+			_context = context;
+		}
 		public DbSet<T> Table => _context.Set<T>();
 
 		public ReadRepository(DbContext context)

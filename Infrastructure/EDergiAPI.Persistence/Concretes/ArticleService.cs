@@ -21,10 +21,8 @@ namespace DergiAPI.Persistence.Concretes
 
 		public Task<List<Article>> GetAllAsync()
 		{
-			// Eğer GetAll() async değilse burada async kullanmana gerek yok.
-			// Ama listeyi Task.FromResult ile sarmalayabiliriz:
-			var articles = _readRepository.GetAll().ToList();
-			return Task.FromResult(articles);
+			var list = _readRepository.GetAll().ToList();
+			return Task.FromResult(list);
 		}
 
 		public async Task<Article> GetByIdAsync(Guid id)

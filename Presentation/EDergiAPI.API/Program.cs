@@ -4,7 +4,10 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // 🔧 Configuration'dan connection string alınıyor (appsettings.json’dan)
-builder.Services.AddPersistenceServices(); 
+var configuration = builder.Configuration;
+
+// 🔧 Persistence servisleri ekleniyor (DbContext, Repository ve Servisler)
+builder.Services.AddPersistenceServices(configuration);
 
 // 🔧 Controller ve Swagger servisleri ekleniyor
 builder.Services.AddControllers();

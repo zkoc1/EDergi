@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EDergiAPI.Persistence.Migrations
 {
     [DbContext(typeof(EDergiAPIDbContext))]
-    [Migration("20250723135824_initial")]
-    partial class initial
+    [Migration("20250723200307_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,22 +25,7 @@ namespace EDergiAPI.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ArticleIssue", b =>
-                {
-                    b.Property<Guid>("ArticlesId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("IssuesId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ArticlesId", "IssuesId");
-
-                    b.HasIndex("IssuesId");
-
-                    b.ToTable("ArticleIssue");
-                });
-
-            modelBuilder.Entity("DergiAPI.Domain.Entitites.Article", b =>
+            modelBuilder.Entity("Article", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -93,6 +78,33 @@ namespace EDergiAPI.Persistence.Migrations
                     b.ToTable("Articles");
                 });
 
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.ArticleIssue", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ArticleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("IssueId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArticleId");
+
+                    b.HasIndex("IssueId");
+
+                    b.ToTable("ArticleIssue");
+                });
+
             modelBuilder.Entity("DergiAPI.Domain.Entitites.Author", b =>
                 {
                     b.Property<Guid>("Id")
@@ -123,34 +135,6 @@ namespace EDergiAPI.Persistence.Migrations
                     b.ToTable("Authors");
                 });
 
-            modelBuilder.Entity("DergiAPI.Domain.Entitites.Issue", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ArticleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("IssueNumber")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("VolumeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("VolumeId");
-
-                    b.ToTable("Issues");
-                });
-
             modelBuilder.Entity("DergiAPI.Domain.Entitites.MDocument", b =>
                 {
                     b.Property<Guid>("Id")
@@ -178,7 +162,7 @@ namespace EDergiAPI.Persistence.Migrations
 
                     b.HasIndex("MagazineId");
 
-                    b.ToTable("Documents");
+                    b.ToTable("MDocuments");
                 });
 
             modelBuilder.Entity("DergiAPI.Domain.Entitites.MNumberOf", b =>
@@ -383,42 +367,62 @@ namespace EDergiAPI.Persistence.Migrations
                     b.ToTable("Volume");
                 });
 
-            modelBuilder.Entity("ArticleIssue", b =>
+            modelBuilder.Entity("Issue", b =>
                 {
-                    b.HasOne("DergiAPI.Domain.Entitites.Article", null)
-                        .WithMany()
-                        .HasForeignKey("ArticlesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasOne("DergiAPI.Domain.Entitites.Issue", null)
-                        .WithMany()
-                        .HasForeignKey("IssuesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IssueNumber")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("VolumeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VolumeId");
+
+                    b.ToTable("Issues");
                 });
 
-            modelBuilder.Entity("DergiAPI.Domain.Entitites.Article", b =>
+            modelBuilder.Entity("Article", b =>
                 {
                     b.HasOne("DergiAPI.Domain.Entitites.Magazine", null)
                         .WithMany("Articles")
                         .HasForeignKey("MagazineId");
                 });
 
-            modelBuilder.Entity("DergiAPI.Domain.Entitites.Author", b =>
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.ArticleIssue", b =>
                 {
-                    b.HasOne("DergiAPI.Domain.Entitites.Article", null)
-                        .WithMany("Authors")
-                        .HasForeignKey("ArticleId");
+                    b.HasOne("Article", "Article")
+                        .WithMany("ArticleIssues")
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Issue", "Issue")
+                        .WithMany("ArticleIssues")
+                        .HasForeignKey("IssueId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Article");
+
+                    b.Navigation("Issue");
                 });
 
-            modelBuilder.Entity("DergiAPI.Domain.Entitites.Issue", b =>
+            modelBuilder.Entity("DergiAPI.Domain.Entitites.Author", b =>
                 {
-                    b.HasOne("DergiAPI.Domain.Entitites.Volume", null)
-                        .WithMany("Issues")
-                        .HasForeignKey("VolumeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Article", null)
+                        .WithMany("Authors")
+                        .HasForeignKey("ArticleId");
                 });
 
             modelBuilder.Entity("DergiAPI.Domain.Entitites.MDocument", b =>
@@ -470,15 +474,26 @@ namespace EDergiAPI.Persistence.Migrations
 
             modelBuilder.Entity("DergiAPI.Domain.Entitites.Volume", b =>
                 {
-                    b.HasOne("DergiAPI.Domain.Entitites.Article", null)
+                    b.HasOne("Article", null)
                         .WithMany("Volumes")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DergiAPI.Domain.Entitites.Article", b =>
+            modelBuilder.Entity("Issue", b =>
                 {
+                    b.HasOne("DergiAPI.Domain.Entitites.Volume", null)
+                        .WithMany("Issues")
+                        .HasForeignKey("VolumeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Article", b =>
+                {
+                    b.Navigation("ArticleIssues");
+
                     b.Navigation("Authors");
 
                     b.Navigation("Volumes");
@@ -500,6 +515,11 @@ namespace EDergiAPI.Persistence.Migrations
             modelBuilder.Entity("DergiAPI.Domain.Entitites.Volume", b =>
                 {
                     b.Navigation("Issues");
+                });
+
+            modelBuilder.Entity("Issue", b =>
+                {
+                    b.Navigation("ArticleIssues");
                 });
 #pragma warning restore 612, 618
         }

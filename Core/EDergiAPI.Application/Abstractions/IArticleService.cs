@@ -8,9 +8,9 @@ namespace EDergiAPI.Application.Abstractions
 	public interface IArticleService
 	{
 		Task<List<Article>> GetAllAsync();
-		Task<Article> GetByIdAsync(Guid id);    // Guid olarak düzeltilmeli
+		Task<Article> GetByIdAsync(Guid id);
 		Task CreateAsync(Article article);
 		Task UpdateAsync(Article article);
-		Task DeleteAsync(Guid id);               // Guid olarak düzeltilmeli
+		Task DeleteAsync(Guid id);
 	}
 }

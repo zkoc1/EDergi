@@ -21,6 +21,7 @@ namespace DergiAPI.Application.Repostories
 		Task AddAsync(ReadIndex readIndex);
 		Task AddAsync(ViewStats viewStats);
 		Task AddAsync(Volume volume);
+		Task AddAsync(ArticleIssue articleIssue);
 		void Remove(Issue issue);
 		Task<bool> RemoveAsync(T model);	
 		Task<bool> RemoveAsync(Guid id);
