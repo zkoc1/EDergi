@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace EDergiAPI.Application.Abstractions
 {
-	public interface IAuthorService
+	public interface IMNumberOfService
 	{
-		Task<List<Author>> GetAllAsync();
-		Task<Author> GetByIdAsync(Guid id);
-		Task CreateAsync(Author author);
-		Task UpdateAsync(Author author);
+		Task<List<MNumberOf>> GetAllAsync();
+		Task<MNumberOf> GetByIdAsync(Guid id);
+		Task CreateAsync(MNumberOf mNumberOf);
+		Task UpdateAsync(MNumberOf mNumberOf);
 		Task DeleteAsync(Guid id);
 	}
 }

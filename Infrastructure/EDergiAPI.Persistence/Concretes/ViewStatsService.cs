@@ -1,11 +1,12 @@
-﻿using DergiAPI.Application.Abstractions.Services;
+﻿using DergiAPI.Domain.Entitites;
+using EDergiAPI.Application.Abstractions;
 using DergiAPI.Application.Repostories;
-using DergiAPI.Domain.Entitites;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
-namespace DergiAPI.Persistence.Concretes.Services
+namespace DergiAPI.Persistence.Concretes
 {
 	public class ViewStatsService : IViewStatsService
 	{
@@ -18,38 +19,34 @@ namespace DergiAPI.Persistence.Concretes.Services
 			_writeRepository = writeRepository;
 		}
 
-		public async Task<List<ViewStats>> GetAllAsync()
+		public Task<List<ViewStats>> GetAllAsync()
 		{
-			return await _readRepository.GetAllAsync();
+			var list = _readRepository.GetAll().ToList();
+			return Task.FromResult(list);
 		}
 
 		public async Task<ViewStats> GetByIdAsync(Guid id)
 		{
-			return await _readRepository.GetByIdAsync(id);
+			return await _readRepository.GetSingleAsync(v => v.Id == id);
 		}
 
-		public async Task<ViewStats> CreateAsync(ViewStats viewStats)
+		public async Task CreateAsync(ViewStats viewStats)
 		{
-			await _writeRepository.Addasync(viewStats);
-			await _writeRepository.SaveAsync();
-			return viewStats;
+			await _writeRepository.AddAsync(viewStats);
 		}
 
-		public async Task<ViewStats> UpdateAsync(ViewStats viewStats)
+		public async Task UpdateAsync(ViewStats viewStats)
 		{
-			_writeRepository.Update(viewStats);
-			await _writeRepository.SaveAsync();
-			return viewStats;
+			await _writeRepository.UpdateAsync(viewStats);
 		}
 
-		public async Task<bool> DeleteAsync(Guid id)
+		public async Task DeleteAsync(Guid id)
 		{
-			var viewStats = await _readRepository.GetByIdAsync(id);
-			if (viewStats == null) return false;
-
-			await _writeRepository.RemoveAsync(viewStats);
-			await _writeRepository.SaveAsync();
-			return true;
+			var viewStats = await _readRepository.GetSingleAsync(v => v.Id == id);
+			if (viewStats != null)
+			{
+				await _writeRepository.RemoveAsync(viewStats);
+			}
 		}
 	}
 }

@@ -1,11 +1,12 @@
-﻿using DergiAPI.Application.Abstractions.Services;
+﻿using DergiAPI.Domain.Entitites;
+using EDergiAPI.Application.Abstractions;
 using DergiAPI.Application.Repostories;
-using DergiAPI.Domain.Entitites;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
-namespace DergiAPI.Persistence.Concretes.Services
+namespace DergiAPI.Persistence.Concretes
 {
 	public class PublisherService : IPublisherService
 	{
@@ -18,38 +19,34 @@ namespace DergiAPI.Persistence.Concretes.Services
 			_writeRepository = writeRepository;
 		}
 
-		public async Task<List<Publisher>> GetAllAsync()
+		public Task<List<Publisher>> GetAllAsync()
 		{
-			return await _readRepository.GetAllAsync();
+			var list = _readRepository.GetAll().ToList();
+			return Task.FromResult(list);
 		}
 
 		public async Task<Publisher> GetByIdAsync(Guid id)
 		{
-			return await _readRepository.GetByIdAsync(id);
+			return await _readRepository.GetSingleAsync(p => p.Id == id);
 		}
 
-		public async Task<Publisher> CreateAsync(Publisher publisher)
+		public async Task CreateAsync(Publisher publisher)
 		{
-			await _writeRepository.Addasync(publisher);
-			await _writeRepository.SaveAsync();
-			return publisher;
+			await _writeRepository.AddAsync(publisher);
 		}
 
-		public async Task<Publisher> UpdateAsync(Publisher publisher)
+		public async Task UpdateAsync(Publisher publisher)
 		{
-			_writeRepository.Update(publisher);
-			await _writeRepository.SaveAsync();
-			return publisher;
+			await _writeRepository.UpdateAsync(publisher);
 		}
 
-		public async Task<bool> DeleteAsync(Guid id)
+		public async Task DeleteAsync(Guid id)
 		{
-			var publisher = await _readRepository.GetByIdAsync(id);
-			if (publisher == null) return false;
-
-			await _writeRepository.RemoveAsync(publisher);
-			await _writeRepository.SaveAsync();
-			return true;
+			var publisher = await _readRepository.GetSingleAsync(p => p.Id == id);
+			if (publisher != null)
+			{
+				await _writeRepository.RemoveAsync(publisher);
+			}
 		}
 	}
 }

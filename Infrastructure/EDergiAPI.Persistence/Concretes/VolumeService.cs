@@ -1,11 +1,12 @@
-﻿using DergiAPI.Application.Abstractions.Services;
+﻿using DergiAPI.Domain.Entitites;
+using EDergiAPI.Application.Abstractions;
 using DergiAPI.Application.Repostories;
-using DergiAPI.Domain.Entitites;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
-namespace DergiAPI.Persistence.Concretes.Services
+namespace DergiAPI.Persistence.Concretes
 {
 	public class VolumeService : IVolumeService
 	{
@@ -18,38 +19,34 @@ namespace DergiAPI.Persistence.Concretes.Services
 			_writeRepository = writeRepository;
 		}
 
-		public async Task<List<Volume>> GetAllAsync()
+		public Task<List<Volume>> GetAllAsync()
 		{
-			return await _readRepository.GetAllAsync();
+			var list = _readRepository.GetAll().ToList();
+			return Task.FromResult(list);
 		}
 
 		public async Task<Volume> GetByIdAsync(Guid id)
 		{
-			return await _readRepository.GetByIdAsync(id);
+			return await _readRepository.GetSingleAsync(v => v.Id == id);
 		}
 
-		public async Task<Volume> CreateAsync(Volume volume)
+		public async Task CreateAsync(Volume volume)
 		{
-			await _writeRepository.Addasync(volume);
-			await _writeRepository.SaveAsync();
-			return volume;
+			await _writeRepository.AddAsync(volume);
 		}
 
-		public async Task<Volume> UpdateAsync(Volume volume)
+		public async Task UpdateAsync(Volume volume)
 		{
-			_writeRepository.Update(volume);
-			await _writeRepository.SaveAsync();
-			return volume;
+			await _writeRepository.UpdateAsync(volume);
 		}
 
-		public async Task<bool> DeleteAsync(Guid id)
+		public async Task DeleteAsync(Guid id)
 		{
-			var volume = await _readRepository.GetByIdAsync(id);
-			if (volume == null) return false;
-
-			await _writeRepository.RemoveAsync(volume);
-			await _writeRepository.SaveAsync();
-			return true;
+			var volume = await _readRepository.GetSingleAsync(v => v.Id == id);
+			if (volume != null)
+			{
+				await _writeRepository.RemoveAsync(volume);
+			}
 		}
 	}
 }

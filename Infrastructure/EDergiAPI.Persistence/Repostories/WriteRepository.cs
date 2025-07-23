@@ -32,10 +32,6 @@ namespace DergiAPI.Application.Repostories
 			throw new NotImplementedException();
 		}
 
-		public Task AddAsync(ArticleIssue articleIssue)
-		{
-			throw new NotImplementedException();
-		}
 
 		public Task<bool> AddAsync(Author author)
 		{
@@ -43,6 +39,36 @@ namespace DergiAPI.Application.Repostories
 		}
 
 		public Task AddAsync(Issue issue)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task AddAsync(MDocument document)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task AddAsync(Magazine magazine)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task AddAsync(Publisher publisher)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task AddAsync(ReadIndex readIndex)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task AddAsync(ViewStats viewStats)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task AddAsync(Volume volume)
 		{
 			throw new NotImplementedException();
 		}
@@ -87,10 +113,6 @@ namespace DergiAPI.Application.Repostories
 			throw new NotImplementedException();
 		}
 
-		public void Update(ArticleIssue articleIssue)
-		{
-			throw new NotImplementedException();
-		}
 
 		public void Update(Issue issue)
 		{
@@ -107,15 +129,6 @@ namespace DergiAPI.Application.Repostories
 			throw new NotImplementedException();
 		}
 
-		public void Update(PurposeScope purposeScope)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Update(Rules rules)
-		{
-			throw new NotImplementedException();
-		}
 
 		public void Update(ViewStats viewStats)
 		{
@@ -127,10 +140,6 @@ namespace DergiAPI.Application.Repostories
 			throw new NotImplementedException();
 		}
 
-		public void Update(WritingRules writingRules)
-		{
-			throw new NotImplementedException();
-		}
 
 		public Task<bool> UpdateAsync(T model)
 		{

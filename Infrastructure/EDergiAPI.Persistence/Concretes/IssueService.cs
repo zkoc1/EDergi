@@ -1,55 +1,52 @@
-﻿using DergiAPI.Application.Abstractions.Services;
+﻿using DergiAPI.Domain.Entitites;
+using EDergiAPI.Application.Abstractions;
 using DergiAPI.Application.Repostories;
-using DergiAPI.Domain.Entitites;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
-namespace DergiAPI.Persistence.Concretes.Services
+namespace DergiAPI.Persistence.Concretes
 {
 	public class IssueService : IIssueService
 	{
-		private readonly IWriteRepository<Issue> _writeRepository;
 		private readonly IReadRepository<Issue> _readRepository;
+		private readonly IWriteRepository<Issue> _writeRepository;
 
-		public IssueService(IWriteRepository<Issue> writeRepository, IReadRepository<Issue> readRepository)
+		public IssueService(IReadRepository<Issue> readRepository, IWriteRepository<Issue> writeRepository)
 		{
-			_writeRepository = writeRepository;
 			_readRepository = readRepository;
+			_writeRepository = writeRepository;
 		}
 
-		public async Task<Issue> CreateAsync(Issue issue)
+		public Task<List<Issue>> GetAllAsync()
 		{
-			await _writeRepository.AddAsync(issue);
-			await _writeRepository.SaveAsync();
-			return issue;
-		}
-
-		public async Task<bool> DeleteAsync(Guid id)
-		{
-			var issue = await _readRepository.GetByIdAsync(id);
-			if (issue == null) return false;
-
-			_writeRepository.Remove(issue);
-			await _writeRepository.SaveAsync();
-			return true;
-		}
-
-		public async Task<List<Issue>> GetAllAsync()
-		{
-			return await _readRepository.GetAllAsync();
+			var list = _readRepository.GetAll().ToList();
+			return Task.FromResult(list);
 		}
 
 		public async Task<Issue> GetByIdAsync(Guid id)
 		{
-			return await _readRepository.GetByIdAsync(id);
+			return await _readRepository.GetSingleAsync(i => i.Id == id);
 		}
 
-		public async Task<Issue> UpdateAsync(Issue issue)
+		public async Task CreateAsync(Issue issue)
 		{
-			_writeRepository.Update(issue);
-			await _writeRepository.SaveAsync();
-			return issue;
+			await _writeRepository.AddAsync(issue);
+		}
+
+		public async Task UpdateAsync(Issue issue)
+		{
+			await _writeRepository.UpdateAsync(issue);
+		}
+
+		public async Task DeleteAsync(Guid id)
+		{
+			var issue = await _readRepository.GetSingleAsync(i => i.Id == id);
+			if (issue != null)
+			{
+				await _writeRepository.RemoveAsync(issue);
+			}
 		}
 	}
 }

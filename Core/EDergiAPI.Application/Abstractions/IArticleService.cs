@@ -1,13 +1,16 @@
 ﻿using DergiAPI.Domain.Entitites;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EDergiAPI.Application.Abstractions
 {
 	public interface IArticleService
 	{
 		Task<List<Article>> GetAllAsync();
-		Task<Article> GetByIdAsync(long id);
+		Task<Article> GetByIdAsync(Guid id);    // Guid olarak düzeltilmeli
 		Task CreateAsync(Article article);
 		Task UpdateAsync(Article article);
-		Task DeleteAsync(long id);
+		Task DeleteAsync(Guid id);               // Guid olarak düzeltilmeli
 	}
 }

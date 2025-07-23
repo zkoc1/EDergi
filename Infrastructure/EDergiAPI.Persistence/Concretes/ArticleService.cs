@@ -1,6 +1,10 @@
 ﻿using DergiAPI.Domain.Entitites;
 using EDergiAPI.Application.Abstractions;
 using DergiAPI.Application.Repostories;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DergiAPI.Persistence.Concretes
 {
@@ -15,9 +19,12 @@ namespace DergiAPI.Persistence.Concretes
 			_writeRepository = writeRepository;
 		}
 
-		public async Task<List<Article>> GetAllAsync()
+		public Task<List<Article>> GetAllAsync()
 		{
-			return _readRepository.GetAll().ToList(); 
+			// Eğer GetAll() async değilse burada async kullanmana gerek yok.
+			// Ama listeyi Task.FromResult ile sarmalayabiliriz:
+			var articles = _readRepository.GetAll().ToList();
+			return Task.FromResult(articles);
 		}
 
 		public async Task<Article> GetByIdAsync(Guid id)
@@ -42,16 +49,6 @@ namespace DergiAPI.Persistence.Concretes
 			{
 				await _writeRepository.RemoveAsync(article);
 			}
-		}
-
-		public Task<Article> GetByIdAsync(long id)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task DeleteAsync(long id)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

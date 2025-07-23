@@ -1,26 +1,28 @@
-﻿using DergiAPI.Application.Abstractions;
+﻿using DergiAPI.Domain.Entitites;
+using EDergiAPI.Application.Abstractions;
 using DergiAPI.Application.Repostories;
-using DergiAPI.Domain.Entitites;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace DergiAPI.Persistence.Concretes
 {
-	public class DocumentService : IDocumentService
+	public class MDocumentService : IMDocumentService
 	{
 		private readonly IReadRepository<MDocument> _readRepository;
 		private readonly IWriteRepository<MDocument> _writeRepository;
 
-		public DocumentService(IReadRepository<MDocument> readRepository, IWriteRepository<MDocument> writeRepository)
+		public MDocumentService(IReadRepository<MDocument> readRepository, IWriteRepository<MDocument> writeRepository)
 		{
 			_readRepository = readRepository;
 			_writeRepository = writeRepository;
 		}
 
-		public async Task<List<MDocument>> GetAllAsync()
+		public Task<List<MDocument>> GetAllAsync()
 		{
-			return _readRepository.GetAll().ToList();
+			var documents = _readRepository.GetAll().ToList();
+			return Task.FromResult(documents);
 		}
 
 		public async Task<MDocument> GetByIdAsync(Guid id)
@@ -30,7 +32,7 @@ namespace DergiAPI.Persistence.Concretes
 
 		public async Task CreateAsync(MDocument document)
 		{
-			await _writeRepository.Addasync(document);
+			await _writeRepository.AddAsync(document);
 		}
 
 		public async Task UpdateAsync(MDocument document)
@@ -45,16 +47,6 @@ namespace DergiAPI.Persistence.Concretes
 			{
 				await _writeRepository.RemoveAsync(document);
 			}
-		}
-
-		public Task<MDocument> GetByIdAsync(long id)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task DeleteAsync(long id)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

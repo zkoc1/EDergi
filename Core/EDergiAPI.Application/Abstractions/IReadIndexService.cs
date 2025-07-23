@@ -1,15 +1,16 @@
 ﻿using DergiAPI.Domain.Entitites;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DergiAPI.Application.Abstractions
+namespace EDergiAPI.Application.Abstractions
 {
 	public interface IReadIndexService
 	{
 		Task<List<ReadIndex>> GetAllAsync();
-		Task<ReadIndex> GetByIdAsync(long id);
-		Task CreateAsync(ReadIndex index);
-		Task UpdateAsync(ReadIndex index);
-		Task DeleteAsync(long id);
+		Task<ReadIndex> GetByIdAsync(Guid id);
+		Task CreateAsync(ReadIndex readIndex);
+		Task UpdateAsync(ReadIndex readIndex);
+		Task DeleteAsync(Guid id);
 	}
 }
