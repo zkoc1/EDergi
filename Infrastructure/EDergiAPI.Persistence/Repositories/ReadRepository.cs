@@ -1,4 +1,5 @@
 ﻿using DergiAPI.Application.Repostories;
+using DergiAPI.Domain.Entitites.Commmon;
 using DergiAPI.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,19 +10,16 @@ using System.Threading.Tasks;
 
 namespace DergiAPI.Persistence.Repostories
 {
-	public class ReadRepository<T> : IReadRepository<T> where T : class
+	public class ReadRepository<T> : IReadRepository<T> where T : BaseEntity
 	{
-		private readonly DbContext _context;
+		private readonly EDergiAPIDbContext _context;
+
 		public ReadRepository(EDergiAPIDbContext context)
 		{
 			_context = context;
 		}
-		public DbSet<T> Table => _context.Set<T>();
 
-		public ReadRepository(DbContext context)
-		{
-			_context = context;
-		}
+		private DbSet<T> Table => _context.Set<T>();
 
 		public IQueryable<T> GetAll()
 		{
@@ -35,7 +33,8 @@ namespace DergiAPI.Persistence.Repostories
 
 		public async Task<T> GetByIdAsync(Guid id)
 		{
-			return await Table.FindAsync(id);
+			// FindAsync tracking yapar, bu yüzden performans için FirstOrDefault önerilir
+			return await Table.AsNoTracking().FirstOrDefaultAsync(e => e.Id == id);
 		}
 
 		public async Task<T> GetSingleAsync(Expression<Func<T, bool>> predicate)

@@ -1,163 +1,163 @@
-﻿using DergiAPI.Domain.Entitites;
+﻿using DergiAPI.Application.Repostories;
+using DergiAPI.Domain.Entitites;
+using DergiAPI.Domain.Entitites.Commmon;
 using DergiAPI.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace DergiAPI.Application.Repostories
+namespace DergiAPI.Persistence.Repositories
 {
-	public class WriteRepository<T> : IWriteRepository<T> where T : class
+	public class WriteRepository<T> : IWriteRepository<T> where T : BaseEntity
 	{
 		protected readonly EDergiAPIDbContext _context;
+
 		public WriteRepository(EDergiAPIDbContext context)
 		{
 			_context = context;
 		}
-		public DbSet<T> Table => throw new NotImplementedException();
 
-		public Task<bool> Addasync(T model)
+		public DbSet<T> Table => _context.Set<T>();
+
+		public async Task<bool> AddAsync(T model)
 		{
-			throw new NotImplementedException();
+			await Table.AddAsync(model);
+			return await _context.SaveChangesAsync() > 0;
 		}
 
-		public Task<bool> Addasync(List<T> model)
+		public async Task<bool> AddRangeAsync(List<T> models)
 		{
-			throw new NotImplementedException();
+			await Table.AddRangeAsync(models);
+			return await _context.SaveChangesAsync() > 0;
 		}
 
-		public Task AddAsync(MNumberOf archive)
+		public async Task<bool> RemoveAsync(T model)
 		{
-			throw new NotImplementedException();
+			Table.Remove(model);
+			return await _context.SaveChangesAsync() > 0;
 		}
 
-		public Task AddAsync(Article article)
+		public async Task<bool> RemoveAsync(Guid id)
 		{
-			throw new NotImplementedException();
+			var entity = await Table.FindAsync(id);
+			if (entity != null)
+			{
+				Table.Remove(entity);
+				return await _context.SaveChangesAsync() > 0;
+			}
+			return false;
 		}
 
-
-		public Task<bool> AddAsync(Author author)
+		public void Update(T model)
 		{
-			throw new NotImplementedException();
+			Table.Update(model);
 		}
 
-		public Task AddAsync(Issue issue)
+		public async Task<bool> UpdateAsync(T model)
 		{
-			throw new NotImplementedException();
+			Table.Update(model);
+			return await _context.SaveChangesAsync() > 0;
 		}
 
-		public Task AddAsync(MDocument document)
+		public async Task SaveAsync()
 		{
-			throw new NotImplementedException();
+			await _context.SaveChangesAsync();
 		}
 
-		public Task AddAsync(Magazine magazine)
+		public async Task AddAsync(MNumberOf archive)
 		{
-			throw new NotImplementedException();
+			await _context.MNumbers.AddAsync(archive);
+			await _context.SaveChangesAsync();
 		}
 
-		public Task AddAsync(Publisher publisher)
+		public async Task DeleteAsync(long id)
 		{
-			throw new NotImplementedException();
+			var entity = await _context.MNumbers.FindAsync(id);
+			if (entity != null)
+			{
+				_context.MNumbers.Remove(entity);
+				await _context.SaveChangesAsync();
+			}
 		}
 
-		public Task AddAsync(ReadIndex readIndex)
+		public async Task<List<MNumberOf>> GetAllAsync()
 		{
-			throw new NotImplementedException();
+			return await _context.MNumbers.ToListAsync();
 		}
 
-		public Task AddAsync(ViewStats viewStats)
+		public async Task<MNumberOf> GetByIdAsync(long id)
 		{
-			throw new NotImplementedException();
+			return await _context.MNumbers.FindAsync(id);
 		}
 
-		public Task AddAsync(Volume volume)
+		public async Task UpdateAsync(MNumberOf archive)
 		{
-			throw new NotImplementedException();
+			_context.MNumbers.Update(archive);
+			await _context.SaveChangesAsync();
 		}
 
-		public Task AddAsync(ArticleIssue articleIssue)
+		public async Task UpdateAsync(ArticleIssue articleIssue)
 		{
-			throw new NotImplementedException();
+			_context.ArticleIssues.Update(articleIssue);
+			await _context.SaveChangesAsync();
 		}
 
-		public Task DeleteAsync(long id)
+		public async Task UpdateAsync(Article article)
 		{
-			throw new NotImplementedException();
+			_context.Articles.Update(article);
+			await _context.SaveChangesAsync();
 		}
 
-		public Task<List<MNumberOf>> GetAllAsync()
+		public async Task UpdateAsync(Author author)
 		{
-			throw new NotImplementedException();
+			_context.Authors.Update(author);
+			await _context.SaveChangesAsync();
 		}
 
-		public Task<MNumberOf> GetByIdAsync(long id)
+		public async Task UpdateAsync(MDocument document)
 		{
-			throw new NotImplementedException();
+			_context.MDocuments.Update(document);
+			await _context.SaveChangesAsync();
 		}
 
-		public void Remove(Issue issue)
+		public async Task UpdateAsync(Issue issue)
 		{
-			throw new NotImplementedException();
+			_context.Issues.Update(issue);
+			await _context.SaveChangesAsync();
 		}
 
-		public Task<bool> RemoveAsync(T model)
+		public async Task UpdateAsync(Magazine magazine)
 		{
-			throw new NotImplementedException();
+			_context.Magazines.Update(magazine);
+			await _context.SaveChangesAsync();
 		}
 
-		public Task<bool> RemoveAsync(Guid id)
+		public async Task UpdateAsync(Publisher publisher)
 		{
-			throw new NotImplementedException();
+			_context.Publishers.Update(publisher);
+			await _context.SaveChangesAsync();
 		}
 
-		public Task<bool> RemoveAsync(MNumberOf author)
+		public async Task UpdateAsync(ReadIndex readIndex)
 		{
-			throw new NotImplementedException();
+			_context.ReadIndices.Update(readIndex);
+			await _context.SaveChangesAsync();
 		}
 
-		public Task SaveAsync()
+		public async Task UpdateAsync(ViewStats viewStats)
 		{
-			throw new NotImplementedException();
+			_context.ViewStats.Update(viewStats);
+			await _context.SaveChangesAsync();
 		}
 
-
-		public void Update(Issue issue)
+		public async Task UpdateAsync(Volume volume)
 		{
-			throw new NotImplementedException();
+			_context.Volumes.Update(volume);
+			await _context.SaveChangesAsync();
 		}
 
-		public void Update(Magazine magazine)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Update(Publisher publisher)
-		{
-			throw new NotImplementedException();
-		}
-
-
-		public void Update(ViewStats viewStats)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Update(Volume volume)
-		{
-			throw new NotImplementedException();
-		}
-
-
-		public Task<bool> UpdateAsync(T model)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task UpdateAsync(MNumberOf archive)
+		public Task UpdateAsync(Admin admin)
 		{
 			throw new NotImplementedException();
 		}

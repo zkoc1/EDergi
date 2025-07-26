@@ -11,6 +11,6 @@ namespace DergiAPI.Domain.Entitites
 	{
 	
 		public string Name { get; set; }
-		public string Affiliation { get; set; }
+		public string Affiliation { get; set; } // Kurum
 	}
 }
