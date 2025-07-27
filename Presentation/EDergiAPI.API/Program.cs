@@ -1,5 +1,7 @@
 ﻿using DergiAPI.Persistence;
 using DergiAPI.Persistence.Contexts;
+using DergiAPI.Domain.Entitites;
+using DergiAPI.Application.Abstractions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,24 +10,25 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
 var configuration = builder.Configuration;
 
-// 🛠️ DbContext yapılandırılıyor
+// DbContext yapılandırması
 builder.Services.AddDbContext<EDergiAPIDbContext>(options =>
 	options.UseSqlServer(configuration.GetConnectionString("SqlServer")));
 
-// 🛠️ Identity yapılandırması (ApplicationUser sınıfı varsa onu kullanmalısın)
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+// Identity yapılandırması (!!! BURADA User kullanıyoruz)
+builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
 	options.Password.RequireDigit = true;
 	options.Password.RequireUppercase = false;
 	options.Password.RequiredLength = 6;
+	options.User.RequireUniqueEmail = true;
+	options.SignIn.RequireConfirmedEmail = false;
 })
 .AddEntityFrameworkStores<EDergiAPIDbContext>()
 .AddDefaultTokenProviders();
 
-// 🔐 JWT Authentication ayarı
+// JWT yapılandırması
 builder.Services.AddAuthentication(options =>
 {
 	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -45,11 +48,17 @@ builder.Services.AddAuthentication(options =>
 	};
 });
 
-// 📦 Custom servisler
+// Servisler
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddPersistenceServices(configuration);
 
-// 🔧 Swagger
-builder.Services.AddControllers();
+// Controller + Swagger
+builder.Services.AddControllers()
+	.AddJsonOptions(options =>
+	{
+		options.JsonSerializerOptions.PropertyNamingPolicy = null;
+	});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -58,14 +67,14 @@ builder.Services.AddSwaggerGen(c =>
 		Title = "EDergiAPI",
 		Version = "v1"
 	});
-	// 🔐 Swagger JWT token desteği (isteğe bağlı)
 	c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
 	{
-		In = ParameterLocation.Header,
-		Description = "JWT token giriniz",
 		Name = "Authorization",
 		Type = SecuritySchemeType.Http,
-		Scheme = "Bearer"
+		Scheme = "Bearer",
+		BearerFormat = "JWT",
+		In = ParameterLocation.Header,
+		Description = "JWT Token'ınızı 'Bearer <token>' formatında girin."
 	});
 	c.AddSecurityRequirement(new OpenApiSecurityRequirement
 	{
@@ -78,8 +87,19 @@ builder.Services.AddSwaggerGen(c =>
 					Id = "Bearer"
 				}
 			},
-			new string[] {}
+			Array.Empty<string>()
 		}
+	});
+});
+
+// CORS
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("AllowAll", builder =>
+	{
+		builder.AllowAnyOrigin()
+			   .AllowAnyMethod()
+			   .AllowAnyHeader();
 	});
 });
 
@@ -95,9 +115,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthentication(); // 🔐 Token middleware
+app.UseCors("AllowAll");
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

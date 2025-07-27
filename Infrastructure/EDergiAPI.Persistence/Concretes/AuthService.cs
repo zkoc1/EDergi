@@ -1,17 +1,18 @@
-﻿using DergiAPI.Application.DTOs;
-using EDergiAPI.Application.Abstractions;
+﻿// Application/Services/AuthService.cs
+using DergiAPI.Application.DTOs;
+using DergiAPI.Application.Abstractions;
+using DergiAPI.Domain.Entitites;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-public class AuthService : DergiAPI.Application.Abstractions.IAuthService
+public class AuthService : IAuthService
 {
 	private readonly UserManager<User> _userManager;
 	private readonly SignInManager<User> _signInManager;
@@ -34,7 +35,7 @@ public class AuthService : DergiAPI.Application.Abstractions.IAuthService
 			Email = model.Email,
 			FirstName = model.FirstName,
 			LastName = model.LastName,
-			
+			ProfilePictureUrl = ""
 		};
 
 		var result = await _userManager.CreateAsync(user, model.Password);
@@ -52,7 +53,7 @@ public class AuthService : DergiAPI.Application.Abstractions.IAuthService
 		var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
 		if (!result.Succeeded) return "Şifre yanlış.";
 
-		return GenerateToken(user); // aşağıda yazacağız
+		return GenerateToken(user);
 	}
 
 	private string GenerateToken(User user)
@@ -78,4 +79,3 @@ public class AuthService : DergiAPI.Application.Abstractions.IAuthService
 		return new JwtSecurityTokenHandler().WriteToken(token);
 	}
 }
-

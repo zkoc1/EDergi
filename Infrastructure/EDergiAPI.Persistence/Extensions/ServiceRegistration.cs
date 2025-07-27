@@ -1,4 +1,5 @@
-﻿using DergiAPI.Application.Repostories;
+﻿using DergiAPI.Application.Abstractions;
+using DergiAPI.Application.Repostories;
 using DergiAPI.Persistence.Concretes;
 using DergiAPI.Persistence.Contexts;
 using DergiAPI.Persistence.Repositories;
@@ -37,6 +38,7 @@ namespace DergiAPI.Persistence
 
 			// 🔧 Kullanıcı ve Admin servisleri
 			services.AddScoped<IAdminService, AdminService>();
+			services.AddScoped<IAuthService, AuthService>();
 
 			return services;
 		}
