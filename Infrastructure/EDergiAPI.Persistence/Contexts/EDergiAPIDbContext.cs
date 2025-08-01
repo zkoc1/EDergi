@@ -2,65 +2,84 @@
 using Microsoft.EntityFrameworkCore;
 using DergiAPI.Domain.Entitites;
 
-namespace DergiAPI.Persistence.Contexts;
 
-public class EDergiAPIDbContext : IdentityDbContext<User> // 👈 önemli düzeltme
+namespace DergiAPI.Persistence.Contexts
 {
-
-	public EDergiAPIDbContext(DbContextOptions<EDergiAPIDbContext> options) : base(options) { }
-
-	// 🔧 DbSet'ler ekleniyor
-	public DbSet<Article> Articles { get; set; }
-	public DbSet<Author> Authors { get; set; }
-	public DbSet<Issue> Issues { get; set; }
-	public DbSet<MDocument> MDocuments { get; set; }
-	public DbSet<Magazine> Magazines { get; set; }
-	public DbSet<Publisher> Publishers { get; set; }
-	public DbSet<ReadIndex> ReadIndices { get; set; }
-	public DbSet<ViewStats> ViewStats { get; set; }
-	public DbSet<Volume> Volumes { get; set; }
-	public DbSet<ArticleIssue> ArticleIssues { get; set; }
-	public DbSet<MNumberOf> MNumbers { get; set; }
-	public DbSet<User> Users { get; set; } // Yeni eklenen kullanıcı tablosu
-	public DbSet<Admin> Admins { get; set; } // Yeni eklenen admin tablosu
-
-	protected override void OnModelCreating(ModelBuilder modelBuilder)
+	public class EDergiAPIDbContext : IdentityDbContext<User>
 	{
-		base.OnModelCreating(modelBuilder);
+		public EDergiAPIDbContext(DbContextOptions<EDergiAPIDbContext> options) : base(options) { }
 
-		// 🔧 ArticleIssue ilişkileri
-		modelBuilder.Entity<ArticleIssue>()
-			.HasOne(ai => ai.Article)
-			.WithMany(a => a.ArticleIssues)
-			.HasForeignKey(ai => ai.ArticleId)
-			.OnDelete(DeleteBehavior.Restrict);
+		// 📦 DbSet Tanımları
+		public DbSet<Article> Articles { get; set; }
+		public DbSet<Author> Authors { get; set; }
+		public DbSet<Issue> Issues { get; set; }
+		public DbSet<MDocument> MDocuments { get; set; }
+		public DbSet<Magazine> Magazines { get; set; }
+		public DbSet<Publisher> Publishers { get; set; }
+		public DbSet<ReadIndex> ReadIndices { get; set; }
+		public DbSet<ViewStats> ViewStats { get; set; }
+		public DbSet<Volume> Volumes { get; set; }
+		public DbSet<User> Users { get; set; }
+		public DbSet<ArticleAuthor> ArticleAuthors { get; set; }
 
-		modelBuilder.Entity<ArticleIssue>()
-			.HasOne(ai => ai.Issue)
-			.WithMany(i => i.ArticleIssues)
-			.HasForeignKey(ai => ai.IssueId)
-			.OnDelete(DeleteBehavior.Restrict);
-
-		// 🔧 User ve Admin tabloları için varsayılan ayarlar
-		modelBuilder.Entity<User>(entity =>
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			entity.HasKey(u => u.Id);
-			entity.Property(u => u.UserName).IsRequired().HasMaxLength(50);
-			entity.Property(u => u.Email).IsRequired().HasMaxLength(100);
-			entity.Property(u => u.FirstName).HasMaxLength(50);
-			entity.Property(u => u.LastName).HasMaxLength(50);
-			entity.Property(u => u.ProfilePictureUrl).HasMaxLength(255);
-			entity.Property(u => u.IsAdmin).HasDefaultValue(false);
-		});
+			base.OnModelCreating(modelBuilder);
 
-		modelBuilder.Entity<Admin>(entity =>
-		{
-			entity.HasKey(a => a.Id);
-			entity.Property(a => a.UserName).IsRequired().HasMaxLength(50);
-			entity.Property(a => a.Email).IsRequired().HasMaxLength(100);
-			entity.Property(a => a.FirstName).HasMaxLength(50);
-			entity.Property(a => a.LastName).HasMaxLength(50);
-			entity.Property(a => a.Role).HasMaxLength(50); // Role özelliği eklendi
-		});
+			// 🧩 User Entity Ayarları
+			modelBuilder.Entity<User>(entity =>
+			{
+				entity.HasKey(u => u.Id);
+				entity.Property(u => u.UserName).IsRequired().HasMaxLength(50);
+				entity.Property(u => u.Email).IsRequired().HasMaxLength(100);
+				entity.Property(u => u.FirstName).HasMaxLength(50);
+				entity.Property(u => u.LastName).HasMaxLength(50);
+				entity.Property(u => u.ProfilePictureUrl).HasMaxLength(255);
+				entity.Property(u => u.IsAdmin).HasDefaultValue(false);
+			});
+
+			// 🔗 ArticleAuthor Many-to-Many
+			modelBuilder.Entity<ArticleAuthor>()
+				.HasKey(aa => new { aa.ArticleId, aa.AuthorId });
+
+			modelBuilder.Entity<ArticleAuthor>()
+				.HasOne(aa => aa.Article)
+				.WithMany(a => a.ArticleAuthors)
+				.HasForeignKey(aa => aa.ArticleId);
+
+			modelBuilder.Entity<ArticleAuthor>()
+				.HasOne(aa => aa.Author)
+				.WithMany(a => a.ArticleAuthors)
+				.HasForeignKey(aa => aa.AuthorId);
+
+			// 🎯 Magazine - Publisher İlişkisi
+			modelBuilder.Entity<Magazine>()
+				.HasOne(m => m.Publisher)
+				.WithMany(p => p.Magazines)
+				.HasForeignKey(m => m.PublisherId);
+
+			// 🎯 Volume - Magazine İlişkisi
+			modelBuilder.Entity<Volume>()
+				.HasOne(v => v.Magazine)
+				.WithMany(m => m.Volumes)
+				.HasForeignKey(v => v.JMagazineId);
+
+			// 🎯 Issue - Volume İlişkisi
+			modelBuilder.Entity<Issue>()
+				.HasOne(i => i.Volume)
+				.WithMany(v => v.Issues)
+				.HasForeignKey(i => i.VolumeId);
+
+			// 🎯 Article - Issue İlişkisi
+			modelBuilder.Entity<Article>()
+				.HasOne(a => a.Issue)
+				.WithMany(i => i.Articles)
+				.HasForeignKey(a => a.IssueId);
+
+			modelBuilder.Entity<Magazine>()
+	          .HasOne(m => m.ViewStats)
+	          .WithOne(v => v.Magazine)
+	          .HasForeignKey<ViewStats>(v => v.MagazineId);
+		}
 	}
 }

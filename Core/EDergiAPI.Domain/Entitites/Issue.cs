@@ -5,8 +5,11 @@ using DergiAPI.Domain.Entitites.Commmon;
 public class Issue : BaseEntity
 {
 	public int IssueNumber { get; set; }
-	public Guid VolumeId { get; set; }
+	public DateTime PublishDate { get; set; }
 
-	// Çoktan çoğa ilişki
-	public ICollection<ArticleIssue> ArticleIssues { get; set; }
+	public Guid VolumeId { get; set; }
+	public virtual Volume Volume { get; set; }
+
+	public ICollection<Article> Articles { get; set; }
+
 }

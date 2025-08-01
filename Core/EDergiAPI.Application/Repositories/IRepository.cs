@@ -12,10 +12,6 @@ namespace DergiAPI.Application.Repostories
 	{
 		DbSet<T> Table { get; }
 
-		Task AddAsync(MNumberOf archive);
-		Task DeleteAsync(long id);
-		Task<List<MNumberOf>> GetAllAsync();
-		Task<MNumberOf> GetByIdAsync(long id);
-		Task UpdateAsync(MNumberOf archive);
+		Task<bool> AddAsync(T model);
 	}
 }

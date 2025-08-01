@@ -1,12 +1,13 @@
 ﻿using DergiAPI.Domain.Entitites;
-using EDergiAPI.Application.Abstractions;
 using DergiAPI.Application.Repostories;
+using DergiAPI.Application.Abstractions;
+using DergiAPI.Application.Interfaces.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DergiAPI.Persistence.Concretes
+namespace DergiAPI.Persistence.Services
 {
 	public class PublisherService : IPublisherService
 	{
@@ -30,23 +31,25 @@ namespace DergiAPI.Persistence.Concretes
 			return await _readRepository.GetSingleAsync(p => p.Id == id);
 		}
 
-		public async Task CreateAsync(Publisher publisher)
+		public async Task<Publisher> CreateAsync(Publisher publisher)
 		{
 			await _writeRepository.AddAsync(publisher);
+			return publisher;
 		}
 
-		public async Task UpdateAsync(Publisher publisher)
+		public async Task<Publisher> UpdateAsync(Publisher publisher)
 		{
 			await _writeRepository.UpdateAsync(publisher);
+			return publisher;
 		}
 
-		public async Task DeleteAsync(Guid id)
+		public async Task<bool> DeleteAsync(Guid id)
 		{
 			var publisher = await _readRepository.GetSingleAsync(p => p.Id == id);
-			if (publisher != null)
-			{
-				await _writeRepository.RemoveAsync(publisher);
-			}
+			if (publisher == null) return false;
+
+			await _writeRepository.RemoveAsync(publisher);
+			return true;
 		}
 	}
 }

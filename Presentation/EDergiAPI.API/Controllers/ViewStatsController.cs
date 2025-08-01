@@ -1,14 +1,14 @@
-﻿using DergiAPI.Domain.Entitites;
-using EDergiAPI.Application.Abstractions;
+﻿using DergiAPI.Application.Interfaces.Services;
+using DergiAPI.Domain.Entitites;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using EDergiAPI.Application.DTOs; // DTO import edildi
 
 namespace DergiAPI.API.Controllers
 {
-	[ApiController]
 	[Route("api/[controller]")]
+	[ApiController]
 	public class ViewStatsController : ControllerBase
 	{
 		private readonly IViewStatsService _viewStatsService;
@@ -19,60 +19,57 @@ namespace DergiAPI.API.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<List<ViewStats>>> GetAll()
+		public async Task<IActionResult> GetAll()
 		{
-			var stats = await _viewStatsService.GetAllAsync();
-			return Ok(stats);
+			var list = await _viewStatsService.GetAllAsync();
+			return Ok(list);
 		}
 
 		[HttpGet("{id}")]
-		public async Task<ActionResult<ViewStats>> GetById(Guid id)
+		public async Task<IActionResult> GetById(Guid id)
 		{
-			var stat = await _viewStatsService.GetByIdAsync(id);
-			if (stat == null)
-				return NotFound();
-
-			return Ok(stat);
+			var entity = await _viewStatsService.GetByIdAsync(id);
+			if (entity == null) return NotFound();
+			return Ok(entity);
 		}
 
-		[HttpPost]
-		public async Task<IActionResult> Create([FromBody] ViewStats viewStats)
+		[HttpGet("magazine/{magazineId}")]
+		public async Task<IActionResult> GetByMagazineId(Guid magazineId)
 		{
-			await _viewStatsService.CreateAsync(viewStats);
-			return CreatedAtAction(nameof(GetById), new { id = viewStats.Id }, viewStats);
+			var entity = await _viewStatsService.GetByMagazineIdAsync(magazineId);
+			if (entity == null) return NotFound();
+			return Ok(entity);
 		}
 
-		// Yeni: Örnek ViewStats oluşturup kaydeden endpoint
-		[HttpPost("create-sample")]
-		public async Task<IActionResult> CreateSample()
+		// 🆕 DTO kullanan Create metodu
+		[HttpPost("{magazineId}")]
+		public async Task<IActionResult> Create(Guid magazineId, [FromBody] ViewStatsDto viewStats)
 		{
-			var sampleViewStats = new ViewStats
-			{
-				Id = Guid.NewGuid(),
-				ViewCount = 1000,
-				FavoriteCount = 150,
-				DownloadCount = 500,
-				CreatedDate = DateTime.UtcNow
-			};
+			if (!ModelState.IsValid) return BadRequest(ModelState);
 
-			await _viewStatsService.CreateAsync(sampleViewStats);
-			return CreatedAtAction(nameof(GetById), new { id = sampleViewStats.Id }, sampleViewStats);
+			var created = await _viewStatsService.CreateAsync(viewStats, magazineId);
+			return Ok(created); // alternatifi: return CreatedAtAction(...)
 		}
 
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Update(Guid id, [FromBody] ViewStats viewStats)
 		{
-			if (id != viewStats.Id)
-				return BadRequest("ID uyuşmuyor.");
+			if (!ModelState.IsValid) return BadRequest(ModelState);
+			if (id != viewStats.Id) return BadRequest("Id mismatch");
 
-			await _viewStatsService.UpdateAsync(viewStats);
-			return NoContent();
+			var existing = await _viewStatsService.GetByIdAsync(id);
+			if (existing == null) return NotFound();
+
+			var updated = await _viewStatsService.UpdateAsync(viewStats);
+			return Ok(updated);
 		}
 
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(Guid id)
 		{
-			await _viewStatsService.DeleteAsync(id);
+			var deleted = await _viewStatsService.DeleteAsync(id);
+			if (!deleted) return NotFound();
+
 			return NoContent();
 		}
 	}

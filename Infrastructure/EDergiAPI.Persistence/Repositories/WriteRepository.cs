@@ -2,6 +2,7 @@
 using DergiAPI.Domain.Entitites;
 using DergiAPI.Domain.Entitites.Commmon;
 using DergiAPI.Persistence.Contexts;
+
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -65,43 +66,8 @@ namespace DergiAPI.Persistence.Repositories
 			await _context.SaveChangesAsync();
 		}
 
-		public async Task AddAsync(MNumberOf archive)
-		{
-			await _context.MNumbers.AddAsync(archive);
-			await _context.SaveChangesAsync();
-		}
-
-		public async Task DeleteAsync(long id)
-		{
-			var entity = await _context.MNumbers.FindAsync(id);
-			if (entity != null)
-			{
-				_context.MNumbers.Remove(entity);
-				await _context.SaveChangesAsync();
-			}
-		}
-
-		public async Task<List<MNumberOf>> GetAllAsync()
-		{
-			return await _context.MNumbers.ToListAsync();
-		}
-
-		public async Task<MNumberOf> GetByIdAsync(long id)
-		{
-			return await _context.MNumbers.FindAsync(id);
-		}
-
-		public async Task UpdateAsync(MNumberOf archive)
-		{
-			_context.MNumbers.Update(archive);
-			await _context.SaveChangesAsync();
-		}
-
-		public async Task UpdateAsync(ArticleIssue articleIssue)
-		{
-			_context.ArticleIssues.Update(articleIssue);
-			await _context.SaveChangesAsync();
-		}
+		
+		
 
 		public async Task UpdateAsync(Article article)
 		{
@@ -132,7 +98,7 @@ namespace DergiAPI.Persistence.Repositories
 			_context.Magazines.Update(magazine);
 			await _context.SaveChangesAsync();
 		}
-
+		
 		public async Task UpdateAsync(Publisher publisher)
 		{
 			_context.Publishers.Update(publisher);
@@ -157,9 +123,10 @@ namespace DergiAPI.Persistence.Repositories
 			await _context.SaveChangesAsync();
 		}
 
-		public Task UpdateAsync(Admin admin)
+		public void Remove(Magazine magazine)
 		{
-			throw new NotImplementedException();
+			_context.Magazines.Remove(magazine);
+			_context.SaveChanges();
 		}
 	}
 }

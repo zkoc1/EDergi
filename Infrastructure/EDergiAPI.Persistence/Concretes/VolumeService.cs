@@ -1,12 +1,14 @@
-﻿using DergiAPI.Domain.Entitites;
-using EDergiAPI.Application.Abstractions;
+﻿using DergiAPI.Application.Abstractions;
+using DergiAPI.Application.Interfaces.Services;
 using DergiAPI.Application.Repostories;
+using DergiAPI.Domain.Entitites;
+using EDergiAPI.Application.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DergiAPI.Persistence.Concretes
+namespace DergiAPI.Persistence.Services
 {
 	public class VolumeService : IVolumeService
 	{
@@ -30,23 +32,67 @@ namespace DergiAPI.Persistence.Concretes
 			return await _readRepository.GetSingleAsync(v => v.Id == id);
 		}
 
-		public async Task CreateAsync(Volume volume)
+		public Task<List<Volume>> GetByMagazineIdAsync(Guid magazineId)
 		{
-			await _writeRepository.AddAsync(volume);
+			var list = _readRepository.GetWhere(v => v.JMagazineId == magazineId).ToList();
+			return Task.FromResult(list);
 		}
 
-		public async Task UpdateAsync(Volume volume)
+		public async Task<Volume> CreateAsync(VolumeCreateDto dto)
+		{
+			var volume = new Volume
+			{
+				Id = Guid.NewGuid(),
+				Title = dto.Title,
+				Year = dto.Year,
+				CreatedDate = DateTime.UtcNow,
+				Issues = dto.Issues?.Select(issueDto => new Issue
+				{
+					Id = Guid.NewGuid(),
+					IssueNumber = issueDto.IssueNumber,
+					PublishDate = issueDto.PublishDate,
+					CreatedDate = DateTime.UtcNow,
+					Articles = issueDto.Articles?.Select(articleDto => new Article
+					{
+						Id = Guid.NewGuid(),
+						Title = articleDto.Title,
+						Description = articleDto.Description,
+						Keywords = articleDto.Keywords,
+						PdfUrl = articleDto.PdfUrl,
+						SupportingInstitution = articleDto.SupportingInstitution,
+						ProjectNumber = articleDto.ProjectNumber,
+						Reference = articleDto.Reference,
+						ArticleLink = articleDto.ArticleLink,
+						CreatedDate = DateTime.UtcNow,
+						IsApproved = articleDto.IsApproved,
+
+						ArticleAuthors = articleDto.AuthorIds?.Select(authorId => new ArticleAuthor
+						{
+							AuthorId = authorId
+						}).ToList()
+
+					}).ToList()
+				}).ToList()
+			};
+
+			await _writeRepository.AddAsync(volume);
+			return volume;
+		}
+
+
+		public async Task<Volume> UpdateAsync(Volume volume)
 		{
 			await _writeRepository.UpdateAsync(volume);
+			return volume;
 		}
 
-		public async Task DeleteAsync(Guid id)
+		public async Task<bool> DeleteAsync(Guid id)
 		{
-			var volume = await _readRepository.GetSingleAsync(v => v.Id == id);
-			if (volume != null)
-			{
-				await _writeRepository.RemoveAsync(volume);
-			}
+			var entity = await _readRepository.GetSingleAsync(v => v.Id == id);
+			if (entity == null) return false;
+
+			await _writeRepository.RemoveAsync(entity);
+			return true;
 		}
 	}
 }

@@ -1,81 +1,60 @@
-﻿// Application/Services/AuthService.cs
+﻿using DergiAPI.Application.Abstractions;
 using DergiAPI.Application.DTOs;
-using DergiAPI.Application.Abstractions;
-using DergiAPI.Domain.Entitites;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+using DergiAPI.Persistence.Contexts;
+using BCrypt.Net;
+using Microsoft.EntityFrameworkCore;
 
 public class AuthService : IAuthService
 {
-	private readonly UserManager<User> _userManager;
-	private readonly SignInManager<User> _signInManager;
-	private readonly IConfiguration _configuration;
+	private readonly EDergiAPIDbContext _context;
+	private readonly ITokenService _tokenService;
 
-	public AuthService(UserManager<User> userManager,
-					   SignInManager<User> signInManager,
-					   IConfiguration configuration)
+	public AuthService(EDergiAPIDbContext context, ITokenService tokenService)
 	{
-		_userManager = userManager;
-		_signInManager = signInManager;
-		_configuration = configuration;
+		_context = context;
+		_tokenService = tokenService;
 	}
 
-	public async Task<string> RegisterAsync(RegisterDto model)
+	public async Task<string> RegisterAsync(RegisterDto dto)
 	{
+		if (_context.Users.Any(x => x.Email == dto.Email))
+			return "Bu email zaten kayıtlı.";
+
 		var user = new User
 		{
-			UserName = model.Email,
-			Email = model.Email,
-			FirstName = model.FirstName,
-			LastName = model.LastName,
-			ProfilePictureUrl = ""
+			Email = dto.Email,
+			FirstName = dto.FirstName,
+			LastName = dto.LastName,
+			UserName = dto.Email,
+			ProfilePictureUrl = "",
+			IsAdmin = dto.Email == "admin@admin.com" // 🔒 Sadece bu email admin olarak işaretlenir
 		};
 
-		var result = await _userManager.CreateAsync(user, model.Password);
-		if (!result.Succeeded)
-			return string.Join(", ", result.Errors.Select(e => e.Description));
+		user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
+		await _context.Users.AddAsync(user);
+		await _context.SaveChangesAsync();
 
 		return "Kayıt başarılı!";
 	}
 
-	public async Task<string> LoginAsync(LoginDto model)
+	public async Task<LoginResultDto> LoginAsync(LoginDto dto)
 	{
-		var user = await _userManager.FindByEmailAsync(model.Email);
-		if (user == null) return "Kullanıcı bulunamadı.";
+		var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email);
+		if (user == null)
+			return new LoginResultDto { Error = "Kullanıcı bulunamadı." };
 
-		var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
-		if (!result.Succeeded) return "Şifre yanlış.";
+		if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+			return new LoginResultDto { Error = "Şifre yanlış." };
 
-		return GenerateToken(user);
+		var role = user.IsAdmin ? "Admin" : "User";
+		var token = _tokenService.CreateToken(user.Email, role);
+
+		return new LoginResultDto { Token = token };
 	}
 
-	private string GenerateToken(User user)
+	public Task<string> AdminLoginAsync(AdminLoginDto dto)
 	{
-		var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-		var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-		var claims = new[]
-		{
-			new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-			new Claim(ClaimTypes.Name, user.UserName),
-			new Claim(ClaimTypes.NameIdentifier, user.Id)
-		};
-
-		var token = new JwtSecurityToken(
-			issuer: _configuration["Jwt:Issuer"],
-			audience: _configuration["Jwt:Audience"],
-			claims: claims,
-			expires: DateTime.UtcNow.AddMinutes(60),
-			signingCredentials: creds
-		);
-
-		return new JwtSecurityTokenHandler().WriteToken(token);
+		throw new NotImplementedException();
 	}
 }

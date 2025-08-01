@@ -1,16 +1,12 @@
-﻿using DergiAPI.Domain.Entitites;
-using EDergiAPI.Application.Abstractions;
-using Microsoft.AspNetCore.Authorization;
+﻿using DergiAPI.Application.Abstractions.Services;
+using DergiAPI.Domain.Entitites;
+using EDergiAPI.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace DergiAPI.API.Controllers
 {
-	[Authorize]
-	[ApiController]
 	[Route("api/[controller]")]
+	[ApiController]
 	public class ArticleController : ControllerBase
 	{
 		private readonly IArticleService _articleService;
@@ -20,78 +16,71 @@ namespace DergiAPI.API.Controllers
 			_articleService = articleService;
 		}
 
-		// GET: api/Article
 		[HttpGet]
-		public async Task<ActionResult<List<Article>>> GetAll()
+		public async Task<IActionResult> GetAll()
 		{
 			var articles = await _articleService.GetAllAsync();
 			return Ok(articles);
 		}
 
-		// GET: api/Article/{id}
 		[HttpGet("{id}")]
-		public async Task<ActionResult<Article>> GetById(Guid id)
+		public async Task<IActionResult> GetById(Guid id)
+		{
+			var article = await _articleService.GetByIdAsync(id);
+			if (article == null)
+				return NotFound();
+			return Ok(article);
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> Create([FromBody] ArticleCreateDto dto)
+		{
+			if (!ModelState.IsValid)
+			{
+				var errors = ModelState.Values.SelectMany(v => v.Errors)
+											  .Select(e => e.ErrorMessage);
+				return BadRequest(string.Join("; ", errors));
+			}
+
+			await _articleService.CreateAsync(dto);
+			return Ok();
+		}
+
+		[HttpPut("approve/{id}")]
+		public async Task<IActionResult> Approve(Guid id)
 		{
 			var article = await _articleService.GetByIdAsync(id);
 			if (article == null)
 				return NotFound();
 
-			return Ok(article);
-		}
-
-		// POST: api/Article
-		[HttpPost]
-		public async Task<IActionResult> Create([FromBody] Article article)
-		{
-			if (article == null)
-				return BadRequest();
-
-			await _articleService.CreateAsync(article);
-			return CreatedAtAction(nameof(GetById), new { id = article.Id }, article);
-		}
-
-		// ÖRNEK: Manuel Article nesnesi oluşturup kaydeden endpoint
-		[HttpPost("create-sample")]
-		public async Task<IActionResult> CreateSampleArticle()
-		{
-			var sampleArticle = new Article
-			{
-				Title = "Yapay Zekâ ile Akademik Yayınlar",
-				Year = 2025,
-				Description = "Bu makale, yapay zekânın akademik yayınlardaki etkisini inceler.",
-				Keywords = "Yapay Zeka, Akademik, Makale",
-				SupportingInstitution = "OpenAI Research",
-				ProjectNumber = "AI-2025-001",
-				Reference = "https://openai.com/articles/ai-publications",
-				ArticleLink = "https://dergipark.org.tr/ai-article",
-
-				// İlişkili koleksiyonlar boş başlatılabilir
-				Authors = new List<Author>(),
-				Volumes = new List<Volume>(),
-				ArticleIssues = new List<ArticleIssue>()
-			};
-
-			await _articleService.CreateAsync(sampleArticle);
-			return CreatedAtAction(nameof(GetById), new { id = sampleArticle.Id }, sampleArticle);
-		}
-
-		// PUT: api/Article/{id}
-		[HttpPut("{id}")]
-		public async Task<IActionResult> Update(Guid id, [FromBody] Article article)
-		{
-			if (article == null || id != article.Id)
-				return BadRequest();
-
+			article.IsApproved = true;
 			await _articleService.UpdateAsync(article);
-			return NoContent();
+
+			return Ok();
+		}
+		[HttpPut("reject/{id}")]
+		public async Task<IActionResult> Reject(Guid id)
+		{
+			var article = await _articleService.GetByIdAsync(id);
+			if (article == null)
+				return NotFound();
+
+			await _articleService.RejectAsync(id);
+			return Ok("Makale reddedildi.");
 		}
 
-		// DELETE: api/Article/{id}
+		[HttpGet("pending")]
+		public async Task<IActionResult> GetPending()
+		{
+			var pendingArticles = await _articleService.GetPendingAsync();
+			return Ok(pendingArticles);
+		}
+
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(Guid id)
 		{
 			await _articleService.DeleteAsync(id);
-			return NoContent();
+			return Ok();
 		}
 	}
 }

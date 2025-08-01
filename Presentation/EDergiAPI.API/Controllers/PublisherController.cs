@@ -1,14 +1,13 @@
-﻿using DergiAPI.Domain.Entitites;
-using EDergiAPI.Application.Abstractions;
+﻿using DergiAPI.Application.Interfaces.Services;
+using DergiAPI.Domain.Entitites;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DergiAPI.API.Controllers
 {
-	[ApiController]
 	[Route("api/[controller]")]
+	[ApiController]
 	public class PublisherController : ControllerBase
 	{
 		private readonly IPublisherService _publisherService;
@@ -19,59 +18,48 @@ namespace DergiAPI.API.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<List<Publisher>>> GetAll()
+		public async Task<IActionResult> GetAll()
 		{
 			var publishers = await _publisherService.GetAllAsync();
 			return Ok(publishers);
 		}
 
 		[HttpGet("{id}")]
-		public async Task<ActionResult<Publisher>> GetById(Guid id)
+		public async Task<IActionResult> GetById(Guid id)
 		{
 			var publisher = await _publisherService.GetByIdAsync(id);
-			if (publisher == null)
-				return NotFound();
-
+			if (publisher == null) return NotFound();
 			return Ok(publisher);
 		}
 
 		[HttpPost]
 		public async Task<IActionResult> Create([FromBody] Publisher publisher)
 		{
-			await _publisherService.CreateAsync(publisher);
-			return CreatedAtAction(nameof(GetById), new { id = publisher.Id }, publisher);
-		}
+			if (!ModelState.IsValid) return BadRequest(ModelState);
 
-		// Yeni: Örnek Publisher oluşturup kaydeden endpoint
-		[HttpPost("create-sample")]
-		public async Task<IActionResult> CreateSample()
-		{
-			var samplePublisher = new Publisher
-			{
-				Id = Guid.NewGuid(),
-				Name = "Örnek Yayıncı",
-				
-				
-			};
-
-			await _publisherService.CreateAsync(samplePublisher);
-			return CreatedAtAction(nameof(GetById), new { id = samplePublisher.Id }, samplePublisher);
+			var created = await _publisherService.CreateAsync(publisher);
+			return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
 		}
 
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Update(Guid id, [FromBody] Publisher publisher)
 		{
-			if (id != publisher.Id)
-				return BadRequest("ID uyuşmuyor.");
+			if (!ModelState.IsValid) return BadRequest(ModelState);
+			if (id != publisher.Id) return BadRequest("Id mismatch");
 
-			await _publisherService.UpdateAsync(publisher);
-			return NoContent();
+			var existing = await _publisherService.GetByIdAsync(id);
+			if (existing == null) return NotFound();
+
+			var updated = await _publisherService.UpdateAsync(publisher);
+			return Ok(updated);
 		}
 
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(Guid id)
 		{
-			await _publisherService.DeleteAsync(id);
+			var deleted = await _publisherService.DeleteAsync(id);
+			if (!deleted) return NotFound();
+
 			return NoContent();
 		}
 	}

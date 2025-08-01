@@ -11,5 +11,6 @@ namespace DergiAPI.Domain.Entitites
 	{
 		
 		public string Name { get; set; }
+		public ICollection<Magazine> Magazines { get; set; }
 	}
 }

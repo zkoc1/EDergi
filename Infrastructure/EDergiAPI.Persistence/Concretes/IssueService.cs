@@ -1,6 +1,8 @@
-﻿using DergiAPI.Domain.Entitites;
-using EDergiAPI.Application.Abstractions;
+﻿// IssueService.cs
+using DergiAPI.Application.Abstractions;
 using DergiAPI.Application.Repostories;
+using DergiAPI.Domain.Entitites;
+using EDergiAPI.Application.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,8 +32,37 @@ namespace DergiAPI.Persistence.Concretes
 			return await _readRepository.GetSingleAsync(i => i.Id == id);
 		}
 
-		public async Task CreateAsync(Issue issue)
+		public async Task CreateAsync(IssueCreateDto dto)
 		{
+			var issue = new Issue
+			{
+				Id = Guid.NewGuid(),
+				IssueNumber = dto.IssueNumber,
+				PublishDate = dto.PublishDate,
+				CreatedDate = DateTime.UtcNow,
+				Articles = dto.Articles?.Select(articleDto => new Article
+				{
+					Id = Guid.NewGuid(),
+					Title = articleDto.Title,
+					Description = articleDto.Description,
+					Keywords = articleDto.Keywords,
+					PdfUrl = articleDto.PdfUrl,
+					SupportingInstitution = articleDto.SupportingInstitution,
+					ProjectNumber = articleDto.ProjectNumber,
+					Reference = articleDto.Reference,
+					ArticleLink = articleDto.ArticleLink,
+					CreatedDate = DateTime.UtcNow,
+					IsApproved= articleDto.IsApproved,
+
+					// ArticleAuthor ilişkisi kuruluyor
+					ArticleAuthors = articleDto.AuthorIds?.Select(authorId => new ArticleAuthor
+					{
+						AuthorId = authorId
+					}).ToList()
+
+				}).ToList()
+			};
+
 			await _writeRepository.AddAsync(issue);
 		}
 

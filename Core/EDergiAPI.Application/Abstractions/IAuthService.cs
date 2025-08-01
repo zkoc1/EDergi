@@ -10,7 +10,9 @@ namespace DergiAPI.Application.Abstractions
 	public interface IAuthService
 	{
 		Task<string> RegisterAsync(RegisterDto model);
-		Task<string> LoginAsync(LoginDto model);
+		Task<LoginResultDto> LoginAsync(LoginDto model);
+
+		Task<string> AdminLoginAsync(AdminLoginDto dto);
 	}
 }
 

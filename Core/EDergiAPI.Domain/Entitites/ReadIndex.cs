@@ -13,5 +13,7 @@ namespace DergiAPI.Domain.Entitites
 		public string Name { get; set; } // Örn: TR Dizin, Scopus vs.
         public string ImageUrl { get; set; }
         public string ImageName { get; set; }
+		public Guid MagazineId { get; set; }
+		public virtual Magazine Magazine { get; set; }
 	}
 }

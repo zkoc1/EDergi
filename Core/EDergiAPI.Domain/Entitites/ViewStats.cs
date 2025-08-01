@@ -13,5 +13,7 @@ namespace DergiAPI.Domain.Entitites
 		public int ViewCount { get; set; }
 		public int FavoriteCount { get; set; }
 		public int DownloadCount { get; set; }
+		public Guid MagazineId { get; set; }
+		public virtual Magazine Magazine { get; set; }
 	}
 }

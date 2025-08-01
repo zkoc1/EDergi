@@ -33,8 +33,12 @@ namespace DergiAPI.Persistence.Repostories
 
 		public async Task<T> GetByIdAsync(Guid id)
 		{
-			// FindAsync tracking yapar, bu yüzden performans için FirstOrDefault önerilir
-			return await Table.AsNoTracking().FirstOrDefaultAsync(e => e.Id == id);
+			return await Table.AsNoTracking().FirstOrDefaultAsync(entity => entity.Id == id);
+		}
+
+		public Task<T> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includes)
+		{
+			throw new NotImplementedException();
 		}
 
 		public async Task<T> GetSingleAsync(Expression<Func<T, bool>> predicate)

@@ -1,12 +1,13 @@
 ﻿using DergiAPI.Domain.Entitites;
-using EDergiAPI.Application.Abstractions;
 using DergiAPI.Application.Repostories;
+using DergiAPI.Application.Abstractions;
+using DergiAPI.Application.Interfaces.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DergiAPI.Persistence.Concretes
+namespace DergiAPI.Persistence.Services
 {
 	public class ReadIndexService : IReadIndexService
 	{
@@ -30,23 +31,31 @@ namespace DergiAPI.Persistence.Concretes
 			return await _readRepository.GetSingleAsync(r => r.Id == id);
 		}
 
-		public async Task CreateAsync(ReadIndex readIndex)
+		public Task<List<ReadIndex>> GetByMagazineIdAsync(Guid magazineId)
+		{
+			var list = _readRepository.GetWhere(r => r.MagazineId == magazineId).ToList();
+			return Task.FromResult(list);
+		}
+
+		public async Task<ReadIndex> CreateAsync(ReadIndex readIndex)
 		{
 			await _writeRepository.AddAsync(readIndex);
+			return readIndex;
 		}
 
-		public async Task UpdateAsync(ReadIndex readIndex)
+		public async Task<ReadIndex> UpdateAsync(ReadIndex readIndex)
 		{
 			await _writeRepository.UpdateAsync(readIndex);
+			return readIndex;
 		}
 
-		public async Task DeleteAsync(Guid id)
+		public async Task<bool> DeleteAsync(Guid id)
 		{
-			var readIndex = await _readRepository.GetSingleAsync(r => r.Id == id);
-			if (readIndex != null)
-			{
-				await _writeRepository.RemoveAsync(readIndex);
-			}
+			var entity = await _readRepository.GetSingleAsync(r => r.Id == id);
+			if (entity == null) return false;
+
+			await _writeRepository.RemoveAsync(entity);
+			return true;
 		}
 	}
 }

@@ -1,16 +1,18 @@
 ﻿using DergiAPI.Domain.Entitites;
+using EDergiAPI.Application.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EDergiAPI.Application.Abstractions
+namespace DergiAPI.Application.Interfaces.Services
 {
 	public interface IViewStatsService
 	{
-		Task<List<ViewStats>> GetAllAsync();
+		Task<IEnumerable<ViewStats>> GetAllAsync();
 		Task<ViewStats> GetByIdAsync(Guid id);
-		Task CreateAsync(ViewStats viewStats);
-		Task UpdateAsync(ViewStats viewStats);
-		Task DeleteAsync(Guid id);
+		Task<ViewStats> GetByMagazineIdAsync(Guid magazineId);
+		Task<ViewStats> CreateAsync(ViewStatsDto dto, Guid magazineId);
+		Task<ViewStats> UpdateAsync(ViewStats viewStats);
+		Task<bool> DeleteAsync(Guid id);
 	}
 }

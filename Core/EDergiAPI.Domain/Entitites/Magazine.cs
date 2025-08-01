@@ -19,10 +19,10 @@ namespace DergiAPI.Domain.Entitites
         public string WritingRules { get; set; }
 		public string JournalRules { get; set; }
 		public ViewStats ViewStats { get; set; }
-		public ICollection<Publisher> Publishers { get; set; }
+		public Publisher  Publisher { get; set; }
+		public Guid PublisherId { get; set; }
 		public ICollection<MDocument> Documents { get; set; }
 		public ICollection<ReadIndex> Indexes { get; set; }//Dizinler
-		public ICollection<MNumberOf> Archives { get; set; }
-		public ICollection<Article> Articles { get; set; }
+		public ICollection<Volume> Volumes { get; set; }
 	}
 }

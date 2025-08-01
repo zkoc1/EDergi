@@ -1,5 +1,6 @@
-﻿using DergiAPI.Domain.Entitites;
-using EDergiAPI.Application.Abstractions;
+﻿using DergiAPI.Application.Interfaces.Services;
+using DergiAPI.Domain.Entitites;
+using EDergiAPI.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,9 @@ namespace DergiAPI.API.Controllers
 	[Route("api/[controller]")]
 	public class MDocumentController : ControllerBase
 	{
-		private readonly IMDocumentService _mDocumentService;
+		private readonly IDocumentService _mDocumentService;
 
-		public MDocumentController(IMDocumentService mDocumentService)
+		public MDocumentController(IDocumentService mDocumentService)
 		{
 			_mDocumentService = mDocumentService;
 		}
@@ -35,31 +36,7 @@ namespace DergiAPI.API.Controllers
 			return Ok(document);
 		}
 
-		[HttpPost]
-		public async Task<IActionResult> Create([FromBody] MDocument document)
-		{
-			await _mDocumentService.CreateAsync(document);
-			return CreatedAtAction(nameof(GetById), new { id = document.Id }, document);
-		}
-
-		// Doğru şekilde örnek nesne oluşturan endpoint
-		[HttpPost("create-sample")]
-		public async Task<IActionResult> CreateSample()
-		{
-			var sampleDocument = new MDocument
-			{
-				
-				Id = Guid.NewGuid(),
-				CreatedDate = DateTime.UtcNow,
-
-				FileName = "example.pdf",
-				FilePath = "/files/documents/example.pdf"
-			};
-
-			await _mDocumentService.CreateAsync(sampleDocument);
-			return CreatedAtAction(nameof(GetById), new { id = sampleDocument.Id }, sampleDocument);
-		}
-
+		
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Update(Guid id, [FromBody] MDocument document)
 		{
@@ -69,6 +46,22 @@ namespace DergiAPI.API.Controllers
 			await _mDocumentService.UpdateAsync(document);
 			return NoContent();
 		}
+		[HttpPost]
+		public async Task<IActionResult> CreateFromEntity([FromBody] MDocumentCreateDto dto)
+		{
+			var document = new MDocument
+			{
+				Id = Guid.NewGuid(),
+				MagazineId = dto.MagazineId,
+				FileName = dto.FileName,
+				FilePath = dto.FilePath,
+				CreatedDate = dto.CreatedDate ?? DateTime.UtcNow
+			};
+
+			await _mDocumentService.CreateAsync(document);
+			return CreatedAtAction(nameof(GetById), new { id = document.Id }, document);
+		}
+
 
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(Guid id)

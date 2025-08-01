@@ -1,10 +1,12 @@
 ﻿using DergiAPI.Application.Abstractions;
+using DergiAPI.Application.Abstractions.Services;
+using DergiAPI.Application.Interfaces.Services;
 using DergiAPI.Application.Repostories;
 using DergiAPI.Persistence.Concretes;
 using DergiAPI.Persistence.Contexts;
 using DergiAPI.Persistence.Repositories;
 using DergiAPI.Persistence.Repostories;
-using EDergiAPI.Application.Abstractions;
+using DergiAPI.Persistence.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,18 +28,17 @@ namespace DergiAPI.Persistence
 			// 🔧 Özel servisler
 			services.AddScoped<IArticleService, ArticleService>();
 			services.AddScoped<IAuthorService, AuthorService>();
-			services.AddScoped<IMDocumentService, MDocumentService>();
+			services.AddScoped<IDocumentService, DocumentService>();
 			services.AddScoped<IReadIndexService, ReadIndexService>();
 			services.AddScoped<IIssueService, IssueService>();
 			services.AddScoped<IMagazineService, MagazineService>();
 			services.AddScoped<IPublisherService, PublisherService>();
 			services.AddScoped<IViewStatsService, ViewStatsService>();
-			services.AddScoped<IArticleIssueService, ArticleIssueService>();
 			services.AddScoped<IVolumeService, VolumeService>();
-			services.AddScoped<IMNumberOfService, MNumberOfService>();
+			
 
-			// 🔧 Kullanıcı ve Admin servisleri
-			services.AddScoped<IAdminService, AdminService>();
+
+			// 🔧 Kullanıcı servisi
 			services.AddScoped<IAuthService, AuthService>();
 
 			return services;

@@ -1,7 +1,7 @@
-﻿// API/Controllers/AuthController.cs
-using DergiAPI.Application.Abstractions;
+﻿using DergiAPI.Application.Abstractions;
 using DergiAPI.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DergiAPI.API.Controllers
@@ -17,11 +17,7 @@ namespace DergiAPI.API.Controllers
 			_authService = authService;
 		}
 
-		/// <summary>
-		/// Kullanıcı kaydı yapar.
-		/// </summary>
-		/// <param name="model">Kayıt DTO'su (email, password, firstName, lastName)</param>
-		/// <returns>Başarılıysa mesaj döner, değilse hata mesajı</returns>
+		// Kullanıcı kayıt
 		[HttpPost("register")]
 		public async Task<IActionResult> Register([FromBody] RegisterDto model)
 		{
@@ -36,23 +32,39 @@ namespace DergiAPI.API.Controllers
 			return BadRequest(new { error = result });
 		}
 
-		/// <summary>
-		/// Giriş yapar ve JWT token döner.
-		/// </summary>
-		/// <param name="model">Giriş DTO'su (email, password)</param>
-		/// <returns>Başarılıysa token, değilse hata mesajı</returns>
+		// Kullanıcı giriş
 		[HttpPost("login")]
 		public async Task<IActionResult> Login([FromBody] LoginDto model)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
-			var token = await _authService.LoginAsync(model);
+			var result = await _authService.LoginAsync(model);
 
-			if (token == "Kullanıcı bulunamadı." || token == "Şifre yanlış.")
-				return Unauthorized(new { error = token });
+			if (!string.IsNullOrEmpty(result.Error))
+				return Unauthorized(new { error = result.Error });
 
-			return Ok(new { token });
+			var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+			var tokenObj = handler.ReadJwtToken(result.Token);
+			var roleClaim = tokenObj.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+			var role = roleClaim?.Value ?? "User";
+
+			return Ok(new { token = result.Token, role });
+		}
+
+		// Admin giriş
+		[HttpPost("admin-login")]
+		public async Task<IActionResult> AdminLogin([FromBody] AdminLoginDto model)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			var result = await _authService.AdminLoginAsync(model);
+
+			if (result == "Admin bulunamadı." || result == "Geçersiz şifre.")
+				return Unauthorized(new { error = result });
+
+			return Ok(new { token = result, role = "Admin" });
 		}
 	}
 }

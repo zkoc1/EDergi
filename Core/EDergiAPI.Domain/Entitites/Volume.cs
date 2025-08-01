@@ -11,7 +11,9 @@ namespace DergiAPI.Domain.Entitites
 	{
 	
 		public string Title { get; set; } //cilt 1, cilt 2 olarak tanımlanabilir
-        public Guid ArticleId { get; set; }
+		public int Year { get; set; }
+		public Guid JMagazineId { get; set; }
+		public virtual Magazine Magazine { get; set; }
 		public ICollection<Issue> Issues { get; set; }
 	}
 }

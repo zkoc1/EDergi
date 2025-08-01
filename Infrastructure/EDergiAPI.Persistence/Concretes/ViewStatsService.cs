@@ -1,9 +1,9 @@
-﻿using DergiAPI.Domain.Entitites;
-using EDergiAPI.Application.Abstractions;
+﻿using DergiAPI.Application.Interfaces.Services;
 using DergiAPI.Application.Repostories;
+using DergiAPI.Domain.Entitites;
+using EDergiAPI.Application.DTOs;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DergiAPI.Persistence.Concretes
@@ -12,41 +12,68 @@ namespace DergiAPI.Persistence.Concretes
 	{
 		private readonly IReadRepository<ViewStats> _readRepository;
 		private readonly IWriteRepository<ViewStats> _writeRepository;
+		private readonly IReadRepository<Magazine> _magazineReadRepository;
 
-		public ViewStatsService(IReadRepository<ViewStats> readRepository, IWriteRepository<ViewStats> writeRepository)
+		public ViewStatsService(
+			IReadRepository<ViewStats> readRepository,
+			IWriteRepository<ViewStats> writeRepository,
+			IReadRepository<Magazine> magazineReadRepository)
 		{
 			_readRepository = readRepository;
 			_writeRepository = writeRepository;
+			_magazineReadRepository = magazineReadRepository;
 		}
 
-		public Task<List<ViewStats>> GetAllAsync()
+		public async Task<IEnumerable<ViewStats>> GetAllAsync()
 		{
-			var list = _readRepository.GetAll().ToList();
-			return Task.FromResult(list);
+			return await _readRepository.GetAllAsync();
 		}
 
 		public async Task<ViewStats> GetByIdAsync(Guid id)
 		{
-			return await _readRepository.GetSingleAsync(v => v.Id == id);
+			return await _readRepository.GetByIdAsync(id);
 		}
 
-		public async Task CreateAsync(ViewStats viewStats)
+		public async Task<ViewStats> GetByMagazineIdAsync(Guid magazineId)
 		{
-			await _writeRepository.AddAsync(viewStats);
+			return await _readRepository.GetSingleAsync(v => v.MagazineId == magazineId);
 		}
 
-		public async Task UpdateAsync(ViewStats viewStats)
+		public async Task<ViewStats> CreateAsync(ViewStatsDto dto, Guid magazineId)
+		{
+			var magazine = await _magazineReadRepository.GetByIdAsync(magazineId);
+			if (magazine == null) throw new Exception("Magazine not found");
+
+			var newStat = new ViewStats
+			{
+				Id = Guid.NewGuid(),
+				MagazineId = magazineId,
+				ViewCount = dto.ViewCount,
+				FavoriteCount = dto.FavoriteCount,
+				DownloadCount = dto.DownloadCount
+			};
+
+			await _writeRepository.AddAsync(newStat);
+			await _writeRepository.SaveAsync();
+
+			return newStat;
+		}
+
+		public async Task<ViewStats> UpdateAsync(ViewStats viewStats)
 		{
 			await _writeRepository.UpdateAsync(viewStats);
+			await _writeRepository.SaveAsync();
+			return viewStats;
 		}
 
-		public async Task DeleteAsync(Guid id)
+		public async Task<bool> DeleteAsync(Guid id)
 		{
-			var viewStats = await _readRepository.GetSingleAsync(v => v.Id == id);
-			if (viewStats != null)
-			{
-				await _writeRepository.RemoveAsync(viewStats);
-			}
+			var stat = await _readRepository.GetByIdAsync(id);
+			if (stat == null) return false;
+
+			await _writeRepository.RemoveAsync(stat);
+			await _writeRepository.SaveAsync();
+			return true;
 		}
 	}
 }

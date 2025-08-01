@@ -1,14 +1,14 @@
-﻿using DergiAPI.Domain.Entitites;
-using EDergiAPI.Application.Abstractions;
+﻿using DergiAPI.Application.Interfaces.Services;
+using DergiAPI.Domain.Entitites;
+using EDergiAPI.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DergiAPI.API.Controllers
 {
-	[ApiController]
 	[Route("api/[controller]")]
+	[ApiController]
 	public class ReadIndexController : ControllerBase
 	{
 		private readonly IReadIndexService _readIndexService;
@@ -19,60 +19,63 @@ namespace DergiAPI.API.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<List<ReadIndex>>> GetAll()
+		public async Task<IActionResult> GetAll()
 		{
-			var readIndices = await _readIndexService.GetAllAsync();
-			return Ok(readIndices);
+			var list = await _readIndexService.GetAllAsync();
+			return Ok(list);
 		}
 
 		[HttpGet("{id}")]
-		public async Task<ActionResult<ReadIndex>> GetById(Guid id)
+		public async Task<IActionResult> GetById(Guid id)
 		{
-			var readIndex = await _readIndexService.GetByIdAsync(id);
-			if (readIndex == null)
-				return NotFound();
+			var entity = await _readIndexService.GetByIdAsync(id);
+			if (entity == null) return NotFound();
+			return Ok(entity);
+		}
 
-			return Ok(readIndex);
+		[HttpGet("magazine/{magazineId}")]
+		public async Task<IActionResult> GetByMagazineId(Guid magazineId)
+		{
+			var list = await _readIndexService.GetByMagazineIdAsync(magazineId);
+			return Ok(list);
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Create([FromBody] ReadIndex readIndex)
+		public async Task<IActionResult> Create([FromBody] ReadIndexDto dto)
 		{
-			await _readIndexService.CreateAsync(readIndex);
-			return CreatedAtAction(nameof(GetById), new { id = readIndex.Id }, readIndex);
-		}
+			if (!ModelState.IsValid) return BadRequest(ModelState);
 
-		// Yeni: Örnek ReadIndex nesnesi oluşturan endpoint
-		[HttpPost("create-sample")]
-		public async Task<IActionResult> CreateSample()
-		{
-			var sampleReadIndex = new ReadIndex
+			var readIndex = new ReadIndex
 			{
-				Id = Guid.NewGuid(),
-				Name = "TR Dizin",
-				ImageName = "trdizin.png",
-				ImageUrl = "https://example.com/images/trdizin.png",
-				CreatedDate = DateTime.UtcNow
+				Name = dto.Name,
+				ImageName = dto.ImageName,
+				ImageUrl = dto.ImageUrl,
+				// MagazineId controller üzerinden verilmediyse burada verilmesi gerekir
 			};
 
-			await _readIndexService.CreateAsync(sampleReadIndex);
-			return CreatedAtAction(nameof(GetById), new { id = sampleReadIndex.Id }, sampleReadIndex);
+			var created = await _readIndexService.CreateAsync(readIndex);
+			return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
 		}
 
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Update(Guid id, [FromBody] ReadIndex readIndex)
 		{
-			if (id != readIndex.Id)
-				return BadRequest("ID uyuşmuyor.");
+			if (!ModelState.IsValid) return BadRequest(ModelState);
+			if (id != readIndex.Id) return BadRequest("Id mismatch");
 
-			await _readIndexService.UpdateAsync(readIndex);
-			return NoContent();
+			var existing = await _readIndexService.GetByIdAsync(id);
+			if (existing == null) return NotFound();
+
+			var updated = await _readIndexService.UpdateAsync(readIndex);
+			return Ok(updated);
 		}
 
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(Guid id)
 		{
-			await _readIndexService.DeleteAsync(id);
+			var deleted = await _readIndexService.DeleteAsync(id);
+			if (!deleted) return NotFound();
+
 			return NoContent();
 		}
 	}

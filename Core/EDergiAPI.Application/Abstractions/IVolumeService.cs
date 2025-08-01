@@ -1,16 +1,19 @@
 ﻿using DergiAPI.Domain.Entitites;
+using EDergiAPI.Application.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EDergiAPI.Application.Abstractions
+namespace DergiAPI.Application.Interfaces.Services
 {
 	public interface IVolumeService
 	{
 		Task<List<Volume>> GetAllAsync();
 		Task<Volume> GetByIdAsync(Guid id);
-		Task CreateAsync(Volume volume);
-		Task UpdateAsync(Volume volume);
-		Task DeleteAsync(Guid id);
+		Task<List<Volume>> GetByMagazineIdAsync(Guid magazineId);
+		Task<Volume> CreateAsync(VolumeCreateDto dto);
+
+		Task<Volume> UpdateAsync(Volume volume);
+		Task<bool> DeleteAsync(Guid id);
 	}
 }

@@ -1,84 +1,75 @@
-﻿using DergiAPI.Domain.Entitites;
-using EDergiAPI.Application.Abstractions;
+﻿using DergiAPI.Application.Interfaces.Services;
+using DergiAPI.Domain.Entitites;
+using EDergiAPI.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DergiAPI.API.Controllers
 {
-	[ApiController]
 	[Route("api/[controller]")]
-	public class VolumesController : ControllerBase
+	[ApiController]
+	public class VolumeController : ControllerBase
 	{
 		private readonly IVolumeService _volumeService;
 
-		public VolumesController(IVolumeService volumeService)
+		public VolumeController(IVolumeService volumeService)
 		{
 			_volumeService = volumeService;
 		}
 
-		// GET: api/Volumes
 		[HttpGet]
-		public async Task<ActionResult<List<Volume>>> GetAll()
+		public async Task<IActionResult> GetAll()
 		{
-			var volumes = await _volumeService.GetAllAsync();
-			return Ok(volumes);
+			var list = await _volumeService.GetAllAsync();
+			return Ok(list);
 		}
 
-		// GET: api/Volumes/{id}
 		[HttpGet("{id}")]
-		public async Task<ActionResult<Volume>> GetById(Guid id)
+		public async Task<IActionResult> GetById(Guid id)
 		{
 			var volume = await _volumeService.GetByIdAsync(id);
-			if (volume == null)
-				return NotFound();
-
+			if (volume == null) return NotFound();
 			return Ok(volume);
 		}
 
-		// POST: api/Volumes
+		[HttpGet("magazine/{magazineId}")]
+		public async Task<IActionResult> GetByMagazineId(Guid magazineId)
+		{
+			var list = await _volumeService.GetByMagazineIdAsync(magazineId);
+			return Ok(list);
+		}
+
 		[HttpPost]
-		public async Task<IActionResult> Create([FromBody] Volume volume)
+		public async Task<IActionResult> Create([FromBody] VolumeCreateDto dto)
 		{
-			if (volume == null)
-				return BadRequest("Veri eksik.");
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 
-			await _volumeService.CreateAsync(volume);
-			return CreatedAtAction(nameof(GetById), new { id = volume.Id }, volume);
+			var created = await _volumeService.CreateAsync(dto);
+			return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
 		}
 
-		// POST: api/Volumes/create-sample
-		[HttpPost("create-sample")]
-		public async Task<IActionResult> CreateSample()
-		{
-			var newVolume = new Volume
-			{
-				Title = "Cilt 1 - Bilgi Teknolojileri",
-				ArticleId = Guid.Parse("11111111-1111-1111-1111-111111111111"), // Gerçek ArticleId ile değiştir
-				Issues = new List<Issue>() // Boş başlatılabilir
-			};
 
-			await _volumeService.CreateAsync(newVolume);
-			return CreatedAtAction(nameof(GetById), new { id = newVolume.Id }, newVolume);
-		}
-
-		// PUT: api/Volumes/{id}
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Update(Guid id, [FromBody] Volume volume)
 		{
-			if (volume == null || id != volume.Id)
-				return BadRequest("ID uyuşmuyor ya da veri eksik.");
+			if (!ModelState.IsValid) return BadRequest(ModelState);
+			if (id != volume.Id) return BadRequest("Id mismatch");
 
-			await _volumeService.UpdateAsync(volume);
-			return NoContent();
+			var existing = await _volumeService.GetByIdAsync(id);
+			if (existing == null) return NotFound();
+
+			var updated = await _volumeService.UpdateAsync(volume);
+			return Ok(updated);
 		}
 
-		// DELETE: api/Volumes/{id}
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(Guid id)
 		{
-			await _volumeService.DeleteAsync(id);
+			var deleted = await _volumeService.DeleteAsync(id);
+			if (!deleted) return NotFound();
+
 			return NoContent();
 		}
 	}

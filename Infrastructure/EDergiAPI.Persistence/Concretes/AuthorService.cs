@@ -1,10 +1,9 @@
-﻿using DergiAPI.Domain.Entitites;
-using EDergiAPI.Application.Abstractions;
+﻿using DergiAPI.Application.Abstractions;
+using DergiAPI.Application.Abstractions.Services;
 using DergiAPI.Application.Repostories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using DergiAPI.Domain.Entitites;
+using EDergiAPI.Application.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DergiAPI.Persistence.Concretes
 {
@@ -12,6 +11,7 @@ namespace DergiAPI.Persistence.Concretes
 	{
 		private readonly IReadRepository<Author> _readRepository;
 		private readonly IWriteRepository<Author> _writeRepository;
+		
 
 		public AuthorService(IReadRepository<Author> readRepository, IWriteRepository<Author> writeRepository)
 		{
@@ -21,8 +21,8 @@ namespace DergiAPI.Persistence.Concretes
 
 		public Task<List<Author>> GetAllAsync()
 		{
-			var authors = _readRepository.GetAll().ToList();
-			return Task.FromResult(authors);
+			var list = _readRepository.GetAll().ToList();
+			return Task.FromResult(list);
 		}
 
 		public async Task<Author> GetByIdAsync(Guid id)
@@ -30,10 +30,26 @@ namespace DergiAPI.Persistence.Concretes
 			return await _readRepository.GetSingleAsync(a => a.Id == id);
 		}
 
-		public async Task CreateAsync(Author author)
+		public async Task CreateAsync(AuthorCreateDto dto)
 		{
+			var author = new Author
+			{
+				Id = Guid.NewGuid(),
+				Name = dto.Name,
+				Email = dto.Email,
+				Affiliation = dto.Affiliation,
+				CreatedDate = DateTime.UtcNow,
+				ArticleAuthors = dto.ArticleIds != null
+					? dto.ArticleIds.Select(articleId => new ArticleAuthor
+					{
+						ArticleId = articleId
+					}).ToList()
+					: new List<ArticleAuthor>()
+			};
+
 			await _writeRepository.AddAsync(author);
 		}
+
 
 		public async Task UpdateAsync(Author author)
 		{

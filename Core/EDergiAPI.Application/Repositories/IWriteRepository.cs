@@ -17,7 +17,6 @@ namespace DergiAPI.Application.Repostories
 		void Update(T model);
 
 		Task SaveAsync();
-		Task UpdateAsync(ArticleIssue articleIssue);
 		Task UpdateAsync(Article article);
 		Task UpdateAsync(Author author);
 		Task UpdateAsync(MDocument document);
@@ -27,6 +26,6 @@ namespace DergiAPI.Application.Repostories
 		Task UpdateAsync(ReadIndex readIndex);
 		Task UpdateAsync(ViewStats viewStats);
 		Task UpdateAsync(Volume volume);
-		Task UpdateAsync(Admin admin);
+		void Remove(Magazine magazine);
 	}
 }

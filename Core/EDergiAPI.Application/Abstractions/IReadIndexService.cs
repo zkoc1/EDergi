@@ -3,14 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EDergiAPI.Application.Abstractions
+namespace DergiAPI.Application.Interfaces.Services
 {
 	public interface IReadIndexService
 	{
 		Task<List<ReadIndex>> GetAllAsync();
 		Task<ReadIndex> GetByIdAsync(Guid id);
-		Task CreateAsync(ReadIndex readIndex);
-		Task UpdateAsync(ReadIndex readIndex);
-		Task DeleteAsync(Guid id);
+		Task<List<ReadIndex>> GetByMagazineIdAsync(Guid magazineId);
+		Task<ReadIndex> CreateAsync(ReadIndex readIndex);
+		Task<ReadIndex> UpdateAsync(ReadIndex readIndex);
+		Task<bool> DeleteAsync(Guid id);
 	}
 }

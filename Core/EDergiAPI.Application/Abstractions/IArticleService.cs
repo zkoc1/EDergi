@@ -1,16 +1,19 @@
 ﻿using DergiAPI.Domain.Entitites;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using EDergiAPI.Application.DTOs;
 
-namespace EDergiAPI.Application.Abstractions
+namespace DergiAPI.Application.Abstractions.Services
 {
 	public interface IArticleService
 	{
 		Task<List<Article>> GetAllAsync();
 		Task<Article> GetByIdAsync(Guid id);
-		Task CreateAsync(Article article);
+		Task CreateAsync(ArticleCreateDto dto);
+		Task<List<ArticleListDto>> GetPendingAsync();
+
 		Task UpdateAsync(Article article);
 		Task DeleteAsync(Guid id);
+		
+		Task RejectAsync(Guid id);
+	
 	}
 }

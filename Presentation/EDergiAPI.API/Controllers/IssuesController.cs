@@ -1,79 +1,62 @@
-﻿using DergiAPI.Domain.Entitites;
-using EDergiAPI.Application.Abstractions;
+﻿// IssueController.cs
+using DergiAPI.Application.Abstractions;
+using DergiAPI.Domain.Entitites;
+using EDergiAPI.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DergiAPI.API.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	public class IssuesController : ControllerBase
+	public class IssueController : ControllerBase
 	{
 		private readonly IIssueService _issueService;
 
-		public IssuesController(IIssueService issueService)
+		public IssueController(IIssueService issueService)
 		{
 			_issueService = issueService;
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<List<Issue>>> GetAll()
+		public async Task<IActionResult> GetAll()
 		{
 			var issues = await _issueService.GetAllAsync();
 			return Ok(issues);
 		}
 
 		[HttpGet("{id}")]
-		public async Task<ActionResult<Issue>> GetById(Guid id)
+		public async Task<IActionResult> GetById(Guid id)
 		{
 			var issue = await _issueService.GetByIdAsync(id);
-			if (issue == null)
-				return NotFound();
-
-			return Ok(issue);
+			return issue != null ? Ok(issue) : NotFound();
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Create([FromBody] Issue issue)
+		public async Task<IActionResult> Create([FromBody] IssueCreateDto dto)
 		{
-			await _issueService.CreateAsync(issue);
-			return CreatedAtAction(nameof(GetById), new { id = issue.Id }, issue);
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			await _issueService.CreateAsync(dto);
+			return Ok();
 		}
 
-		// Örnek (sample) Issue oluşturup ekleyen endpoint
-		[HttpPost("create-sample")]
-		public async Task<IActionResult> CreateSample()
+
+
+		[HttpPut]
+		public async Task<IActionResult> Update([FromBody] Issue issue)
 		{
-			var sampleIssue = new Issue
-			{
-				Id = Guid.NewGuid(),
-				IssueNumber = 1,
-				VolumeId = Guid.NewGuid(), 
-				ArticleIssues = new List<ArticleIssue>(), 
-				CreatedDate = DateTime.UtcNow
-			};
-
-			await _issueService.CreateAsync(sampleIssue);
-			return CreatedAtAction(nameof(GetById), new { id = sampleIssue.Id }, sampleIssue);
-		}
-
-		[HttpPut("{id}")]
-		public async Task<IActionResult> Update(Guid id, [FromBody] Issue issue)
-		{
-			if (id != issue.Id)
-				return BadRequest("ID uyuşmuyor.");
-
 			await _issueService.UpdateAsync(issue);
-			return NoContent();
+			return Ok();
 		}
 
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(Guid id)
 		{
 			await _issueService.DeleteAsync(id);
-			return NoContent();
+			return Ok();
 		}
 	}
 }

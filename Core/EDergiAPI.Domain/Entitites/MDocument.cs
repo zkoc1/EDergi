@@ -12,5 +12,7 @@ namespace DergiAPI.Domain.Entitites
 		
 		public string FileName { get; set; }
 		public string FilePath { get; set; }
+		public Guid MagazineId { get; set; }
+		public virtual Magazine Magazine { get; set; }
 	}
 }

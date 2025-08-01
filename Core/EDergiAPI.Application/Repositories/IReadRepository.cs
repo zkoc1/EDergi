@@ -14,5 +14,6 @@ namespace DergiAPI.Application.Repostories
 		Task<T> GetSingleAsync(Expression<Func<T, bool>> predicate);
 		Task<T> GetByIdAsync(Guid id);
 		Task<List<T>> GetAllAsync();
+	
 	}
 }
