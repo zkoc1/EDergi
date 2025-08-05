@@ -18,6 +18,8 @@ namespace DergiAPI.Domain.Entitites
         public string Scope { get; set; }
         public string WritingRules { get; set; }
 		public string JournalRules { get; set; }
+		public string ImageUrl { get; set; }
+		public string ImageName { get; set; }
 		public ViewStats ViewStats { get; set; }
 		public Publisher  Publisher { get; set; }
 		public Guid PublisherId { get; set; }

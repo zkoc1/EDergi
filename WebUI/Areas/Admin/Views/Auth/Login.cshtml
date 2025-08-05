@@ -1,0 +1,41 @@
+﻿@{
+    Layout = null;
+    ViewData["Title"] = "Giriş Yap";
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <title>Giriş Yap</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body class="bg-light">
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="card p-4 shadow">
+                    <h4 class="text-center mb-3">Giriş Yap</h4>
+
+                    <form method="post" asp-area="Login" asp-controller="Account" asp-action="Login">
+                        <div class="mb-3">
+                            <input type="email" name="email" class="form-control" placeholder="E-posta" required />
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" name="password" class="form-control" placeholder="Şifre" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+                    </form>
+
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger mt-3">@ViewBag.Error</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

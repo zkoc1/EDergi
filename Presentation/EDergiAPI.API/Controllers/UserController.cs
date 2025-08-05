@@ -38,6 +38,9 @@ namespace DergiAPI.API.Controllers
 			if (!result.Succeeded)
 				return BadRequest(result.Errors);
 
+			// Kullanıcıya varsayılan rol atama
+			await _userManager.AddToRoleAsync(user, "User");
+
 			return Ok(new { Message = "Kullanıcı başarıyla kaydedildi." });
 		}
 
@@ -68,7 +71,6 @@ namespace DergiAPI.API.Controllers
 
 			user.FirstName = model.FirstName;
 			user.LastName = model.LastName;
-			user.ProfilePictureUrl = model.ProfilePictureUrl;
 
 			var result = await _userManager.UpdateAsync(user);
 			if (!result.Succeeded)

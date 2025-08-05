@@ -13,12 +13,12 @@ public class TokenService : ITokenService
 		_configuration = configuration;
 	}
 
-	public string CreateToken(string email, string role)
+	public string CreateToken(string email)
 	{
 		var claims = new[]
 		{
 			new Claim(ClaimTypes.Email, email),
-			new Claim(ClaimTypes.Role, role)
+		
 		};
 
 		var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

@@ -1,25 +1,23 @@
-﻿using DergiAPI.Persistence;
+﻿using DergiAPI.Application.Abstractions;
+using DergiAPI.Application.Abstractions.Services;
+using DergiAPI.Persistence;
+using DergiAPI.Persistence.Concretes;
 using DergiAPI.Persistence.Contexts;
-using DergiAPI.Domain.Entitites;
-using DergiAPI.Application.Abstractions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using DergiAPI.Application.Abstractions.Services;
-using DergiAPI.Persistence.Concretes;
-
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
-// DbContext yapılandırması
+// DbContext
 builder.Services.AddDbContext<EDergiAPIDbContext>(options =>
 	options.UseSqlServer(configuration.GetConnectionString("SqlServer")));
 
-// Identity yapılandırması (!!! BURADA User kullanıyoruz)
+// Identity
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
 	options.Password.RequireDigit = true;
@@ -31,7 +29,7 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddEntityFrameworkStores<EDergiAPIDbContext>()
 .AddDefaultTokenProviders();
 
-// JWT yapılandırması
+// JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 	.AddJwtBearer(options =>
 	{
@@ -41,37 +39,30 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 			ValidateAudience = true,
 			ValidateLifetime = true,
 			ValidateIssuerSigningKey = true,
-			ValidIssuer = "yourApp",
-			ValidAudience = "yourApp",
-			IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("yourSecretKey"))
+			ValidIssuer = configuration["Jwt:Issuer"],
+			ValidAudience = configuration["Jwt:Audience"],
+			IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
 		};
 	});
 
-
 // Servisler
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<ITokenService,TokenService>();
-builder.Services.AddScoped<IArticleService,ArticleService>();
+builder.Services.AddScoped<IArticleService, ArticleService>();
 
 builder.Services.AddPersistenceServices(configuration);
 
-// Controller + Swagger
+// Controllers ve JSON ayarları
 builder.Services.AddControllers()
 	.AddJsonOptions(options =>
 	{
 		options.JsonSerializerOptions.PropertyNamingPolicy = null;
 	});
 
-builder.Services.AddDirectoryBrowser();
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
 {
-	c.SwaggerDoc("v1", new OpenApiInfo
-	{
-		Title = "EDergiAPI",
-		Version = "v1"
-	});
+	c.SwaggerDoc("v1", new OpenApiInfo { Title = "EDergiAPI", Version = "v1" });
 	c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
 	{
 		Name = "Authorization",
@@ -100,16 +91,17 @@ builder.Services.AddSwaggerGen(c =>
 // CORS
 builder.Services.AddCors(options =>
 {
-	options.AddPolicy("AllowAll", builder =>
+	options.AddPolicy("AllowAll", policy =>
 	{
-		builder.AllowAnyOrigin()
-			   .AllowAnyMethod()
-			   .AllowAnyHeader();
+		policy.AllowAnyOrigin()
+			  .AllowAnyMethod()
+			  .AllowAnyHeader();
 	});
 });
 
-var app = builder.Build();
+var app = builder.Build(); 
 
+// Middleware sırası
 if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();
@@ -121,11 +113,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseStaticFiles(); // wwwroot klasörü için gerekli
+
+app.UseAuthentication();  // JWT doğrulaması için bu önce gelmeli
+app.UseAuthorization();   // sonra yetkilendirme yapılmalı
+
+app.UseStaticFiles();
 app.MapControllers();
-
-
 
 app.Run();

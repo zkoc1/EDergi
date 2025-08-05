@@ -1,6 +1,7 @@
 ﻿using DergiAPI.Application.Abstractions.Services;
 using DergiAPI.Domain.Entitites;
 using EDergiAPI.Application.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DergiAPI.API.Controllers
@@ -68,7 +69,7 @@ namespace DergiAPI.API.Controllers
 			await _articleService.RejectAsync(id);
 			return Ok("Makale reddedildi.");
 		}
-
+		
 		[HttpGet("pending")]
 		public async Task<IActionResult> GetPending()
 		{

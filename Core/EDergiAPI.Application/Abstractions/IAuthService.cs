@@ -12,7 +12,7 @@ namespace DergiAPI.Application.Abstractions
 		Task<string> RegisterAsync(RegisterDto model);
 		Task<LoginResultDto> LoginAsync(LoginDto model);
 
-		Task<string> AdminLoginAsync(AdminLoginDto dto);
+		
 	}
 }
 

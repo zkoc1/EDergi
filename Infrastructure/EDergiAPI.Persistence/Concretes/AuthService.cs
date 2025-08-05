@@ -26,8 +26,7 @@ public class AuthService : IAuthService
 			FirstName = dto.FirstName,
 			LastName = dto.LastName,
 			UserName = dto.Email,
-			ProfilePictureUrl = "",
-			IsAdmin = dto.Email == "admin@admin.com" // 🔒 Sadece bu email admin olarak işaretlenir
+	
 		};
 
 		user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
@@ -47,14 +46,11 @@ public class AuthService : IAuthService
 		if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
 			return new LoginResultDto { Error = "Şifre yanlış." };
 
-		var role = user.IsAdmin ? "Admin" : "User";
-		var token = _tokenService.CreateToken(user.Email, role);
+	
+		var token = _tokenService.CreateToken(user.Email);
 
 		return new LoginResultDto { Token = token };
 	}
 
-	public Task<string> AdminLoginAsync(AdminLoginDto dto)
-	{
-		throw new NotImplementedException();
-	}
+	
 }

@@ -18,7 +18,7 @@ namespace EDergiAPI.Application.DTOs
     public string ProjectNumber { get; set; }
     public string Reference { get; set; }
     public string ArticleLink { get; set; }
-    public Guid IssueId { get; set; }
+		public Guid IssueId { get; set; }
     public List<Guid> AuthorIds { get; set; }
     public bool IsApproved { get; set; }
 	}

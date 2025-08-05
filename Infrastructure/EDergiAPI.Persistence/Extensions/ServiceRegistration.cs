@@ -35,7 +35,9 @@ namespace DergiAPI.Persistence
 			services.AddScoped<IPublisherService, PublisherService>();
 			services.AddScoped<IViewStatsService, ViewStatsService>();
 			services.AddScoped<IVolumeService, VolumeService>();
-			
+		    services.AddScoped<ITokenService, TokenService>();
+
+
 
 
 			// 🔧 Kullanıcı servisi

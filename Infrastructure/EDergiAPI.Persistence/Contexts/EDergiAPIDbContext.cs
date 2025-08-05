@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using DergiAPI.Domain.Entitites;
+using EDergiAPI.Domain.Entitites;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using DergiAPI.Domain.Entitites;
-
 
 namespace DergiAPI.Persistence.Contexts
 {
-	public class EDergiAPIDbContext : IdentityDbContext<User>
+	public class EDergiAPIDbContext : IdentityDbContext<User, Role, string>
 	{
 		public EDergiAPIDbContext(DbContextOptions<EDergiAPIDbContext> options) : base(options) { }
 
@@ -19,7 +19,6 @@ namespace DergiAPI.Persistence.Contexts
 		public DbSet<ReadIndex> ReadIndices { get; set; }
 		public DbSet<ViewStats> ViewStats { get; set; }
 		public DbSet<Volume> Volumes { get; set; }
-		public DbSet<User> Users { get; set; }
 		public DbSet<ArticleAuthor> ArticleAuthors { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -29,13 +28,9 @@ namespace DergiAPI.Persistence.Contexts
 			// 🧩 User Entity Ayarları
 			modelBuilder.Entity<User>(entity =>
 			{
-				entity.HasKey(u => u.Id);
-				entity.Property(u => u.UserName).IsRequired().HasMaxLength(50);
-				entity.Property(u => u.Email).IsRequired().HasMaxLength(100);
-				entity.Property(u => u.FirstName).HasMaxLength(50);
-				entity.Property(u => u.LastName).HasMaxLength(50);
-				entity.Property(u => u.ProfilePictureUrl).HasMaxLength(255);
-				entity.Property(u => u.IsAdmin).HasDefaultValue(false);
+				entity.Property(u => u.FirstName).HasMaxLength(50).IsRequired();
+				entity.Property(u => u.LastName).HasMaxLength(50).IsRequired();
+				entity.Property(u => u.CreatedAt).IsRequired();
 			});
 
 			// 🔗 ArticleAuthor Many-to-Many
@@ -76,10 +71,11 @@ namespace DergiAPI.Persistence.Contexts
 				.WithMany(i => i.Articles)
 				.HasForeignKey(a => a.IssueId);
 
+			// 🎯 Magazine - ViewStats One-to-One
 			modelBuilder.Entity<Magazine>()
-	          .HasOne(m => m.ViewStats)
-	          .WithOne(v => v.Magazine)
-	          .HasForeignKey<ViewStats>(v => v.MagazineId);
+				.HasOne(m => m.ViewStats)
+				.WithOne(v => v.Magazine)
+				.HasForeignKey<ViewStats>(v => v.MagazineId);
 		}
 	}
 }

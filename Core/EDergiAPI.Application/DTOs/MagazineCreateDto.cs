@@ -17,6 +17,8 @@ namespace EDergiAPI.Application.DTOs
 		public string Scope { get; set; }
 		public string WritingRules { get; set; }
 		public string JournalRules { get; set; }
+		public string ImageUrl { get; set; }
+		public string ImageName { get; set; }
 
 		public Guid PublisherId { get; set; } // zaten Publisher'ı dışarıdan bağlıyorsun
 

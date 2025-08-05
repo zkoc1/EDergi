@@ -25,8 +25,26 @@ namespace DergiAPI.Persistence.Concretes
 
 		public async Task<List<Magazine>> GetAllAsync()
 		{
-			return await _readRepository.GetAll().ToListAsync();
+			var magazines = await _readRepository.GetAll()
+				 .Include(m => m.ViewStats)
+				 .Select(m => new Magazine
+				 {
+					 Id = m.Id,
+					 Title = m.Title,
+					 ImageUrl = m.ImageUrl,
+					 ISSN = m.ISSN,
+					 ViewStats = new ViewStats
+					 {
+						 ViewCount = m.ViewStats.ViewCount,
+						 Magazine = null // Döngüsel referansı kaldır
+					 }
+				 })
+				.ToListAsync();
+
+			return magazines;
 		}
+
+
 
 		public async Task<Magazine> GetByIdAsync(Guid id)
 		{
@@ -49,6 +67,8 @@ namespace DergiAPI.Persistence.Concretes
 				Scope = dto.Scope,
 				WritingRules = dto.WritingRules,
 				JournalRules = dto.JournalRules,
+				ImageUrl = dto.ImageUrl,
+                ImageName = dto.ImageName,
 				PublisherId = dto.PublisherId,
 
 				ViewStats = new ViewStats

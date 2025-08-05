@@ -10,5 +10,6 @@ namespace DergiAPI.Application.DTOs
 	{
 		public string Email { get; set; }
 		public string Password { get; set; }
+		public string Role { get; set; } // Kullanıcı rolü, örneğin "Admin", "User" vb.
 	}
 }

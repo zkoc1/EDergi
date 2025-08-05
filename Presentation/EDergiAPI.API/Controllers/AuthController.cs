@@ -52,19 +52,6 @@ namespace DergiAPI.API.Controllers
 			return Ok(new { token = result.Token, role });
 		}
 
-		// Admin giriş
-		[HttpPost("admin-login")]
-		public async Task<IActionResult> AdminLogin([FromBody] AdminLoginDto model)
-		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
-
-			var result = await _authService.AdminLoginAsync(model);
-
-			if (result == "Admin bulunamadı." || result == "Geçersiz şifre.")
-				return Unauthorized(new { error = result });
-
-			return Ok(new { token = result, role = "Admin" });
-		}
+		
 	}
 }
