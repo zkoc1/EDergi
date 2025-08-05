@@ -1,0 +1,6 @@
+@EDergi.API_HostAddress = http://localhost:5227
+
+GET {{EDergi.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

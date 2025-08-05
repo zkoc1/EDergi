@@ -1,0 +1,18 @@
+﻿
+using EDergi.Domain.Entitites.Commmon;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+namespace EDergi.Domain.Entitites
+{
+	public class MDocument : BaseEntity
+	{
+		
+		public string FileName { get; set; }
+		public string FilePath { get; set; }
+		public Guid MagazineId { get; set; }
+		public virtual Magazine Magazine { get; set; }
+	}
+}

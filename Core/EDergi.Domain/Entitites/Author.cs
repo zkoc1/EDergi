@@ -1,0 +1,18 @@
+﻿
+using EDergi.Domain.Entitites.Commmon;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+namespace EDergi.Domain.Entitites
+{
+	public class Author : BaseEntity
+	{
+		
+		public string Name { get; set; }
+		public string Email { get; set; }
+		public string Affiliation { get; set; } // Kurum
+		public ICollection<ArticleAuthor> ArticleAuthors { get; set; }
+	}
+}
