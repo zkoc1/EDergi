@@ -2,7 +2,6 @@
 using EDergi.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace EDergi.API.Controllers
 {
@@ -17,7 +16,6 @@ namespace EDergi.API.Controllers
 			_authService = authService;
 		}
 
-		// Kullanıcı kayıt
 		[HttpPost("register")]
 		public async Task<IActionResult> Register([FromBody] RegisterDto model)
 		{
@@ -26,13 +24,11 @@ namespace EDergi.API.Controllers
 
 			var result = await _authService.RegisterAsync(model);
 
-			if (result == "Kayıt başarılı!")
-				return Ok(new { message = result });
-
-			return BadRequest(new { error = result });
+			return result == "Kayıt başarılı!"
+				? Ok(new { message = result })
+				: BadRequest(new { error = result });
 		}
 
-		// Kullanıcı giriş
 		[HttpPost("login")]
 		public async Task<IActionResult> Login([FromBody] LoginDto model)
 		{
@@ -52,6 +48,46 @@ namespace EDergi.API.Controllers
 			return Ok(new { token = result.Token, role });
 		}
 
-		
+		// ✅ Set Password (ilk defa giriş yapan kullanıcı için)
+		[HttpPost("set-password")]
+		public async Task<IActionResult> SetPassword([FromBody] SetPasswordDto model)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			var result = await _authService.SetPasswordAsync(model);
+			if (!result)
+				return BadRequest(new { error = "Şifre güncellenemedi." });
+
+			return Ok(new { message = "Şifre başarıyla güncellendi." });
+		}
+
+		// ✅ Forgot Password (şifre sıfırlama maili için)
+		[HttpPost("forgot-password")]
+		public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto model)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			var result = await _authService.ForgotPasswordAsync(model);
+			if (!result)
+				return NotFound(new { error = "Kullanıcı bulunamadı." });
+
+			return Ok(new { message = "Geçici şifre e-posta adresinize gönderildi." });
+		}
+
+		// ✅ Reset Password (geçici şifreyi girip yeni şifreyi ayarlamak için)
+		[HttpPost("reset-password")]
+		public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			var result = await _authService.ResetPasswordAsync(model);
+			if (!result)
+				return BadRequest(new { error = "Şifre sıfırlama başarısız." });
+
+			return Ok(new { message = "Şifreniz başarıyla sıfırlandı." });
+		}
 	}
 }

@@ -1,9 +1,59 @@
-﻿@{
-    ViewData["Title"] = "Dashboard";
-}
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        /* İçeriği ortala */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            text-align: center;
+            background-color: #f8f9fa; /* Arka plan rengi */
+            font-family: Arial, sans-serif; /* Yazı tipi */
+        }
 
-@section PageHeader {
-    <h2>Admin Panel</h2>
-}
+        /* Başlık stil */
+        h2 {
+            color: #343a40; /* Koyu gri renk */
+            margin-bottom: 20px;
+        }
 
-<p>Hoş geldiniz!</p>
+        /* Hoş geldiniz mesajı */
+        p {
+            color: #495057; /* Orta gri renk */
+            font-size: 18px;
+        }
+
+        /* Buton stil */
+        .btn-danger {
+            background-color: #dc3545; /* Kırmızı renk */
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+            .btn-danger:hover {
+                background-color: #c82333; /* Hover durumunda koyu kırmızı */
+            }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>Admin Panel</h2>
+    </header>
+    <main>
+        <p>Hoş geldiniz @User.Identity.Name!</p>
+       
+    </main>
+</body>
+</html>

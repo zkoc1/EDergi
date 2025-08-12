@@ -4,7 +4,7 @@ namespace WebPageUI.Areas.Admin.Models
 {
 	public class LoginViewModel
 	{
-		[Required(ErrorMessage = "Kullanıcı adı veya e-posta gereklidir.")]
+		[Required(ErrorMessage = " E-posta gereklidir.")]
 		[EmailAddress]
 		public string Email { get; set; }
 

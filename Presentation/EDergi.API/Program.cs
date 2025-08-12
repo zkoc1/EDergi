@@ -1,9 +1,12 @@
 ﻿using EDergi.Application.Abstractions;
 using EDergi.Application.Abstractions.Services;
+using EDergi.Application.Repostories;
 using EDergi.Domain.Entitites;
 using EDergi.Persistence;
 using EDergi.Persistence.Concretes;
 using EDergi.Persistence.Contexts;
+using EDergi.Persistence.Repositories;
+using EDergi.Persistence.Repostories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,17 +22,13 @@ builder.Services.AddDbContext<EDergiDbContext>(options =>
 	options.UseSqlServer(configuration.GetConnectionString("SqlServer")));
 
 // Identity (Role modelin artık özel Role sınıfın)
-builder.Services.AddIdentity<User, Role>(options =>
+builder.Services.AddIdentity<AppUser, AppRole>(options =>
 {
-	options.Password.RequireDigit = true;
-	options.Password.RequireUppercase = false;
+	options.Password.RequireDigit = false;
 	options.Password.RequiredLength = 6;
-	options.User.RequireUniqueEmail = true;
-	options.SignIn.RequireConfirmedEmail = false;
 })
 .AddEntityFrameworkStores<EDergiDbContext>()
 .AddDefaultTokenProviders();
-
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 	.AddJwtBearer(options =>
@@ -49,7 +48,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Servisler
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IArticleService, ArticleService>();
+builder.Services.AddScoped<IReadRepository<Author>, ReadRepository<Author>>();
+builder.Services.AddScoped<IWriteRepository<Author>, WriteRepository<Author>>();
+builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddPersistenceServices(configuration);
+builder.Services.Configure<EmailSettings>(
+	builder.Configuration.GetSection("Email"));
+
 
 // Controllers
 builder.Services.AddControllers()

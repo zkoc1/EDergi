@@ -1,0 +1,90 @@
+﻿@using EDergi.Web.Areas.Admin.Models
+@{
+    ViewData["Title"] = "Yeni Dergi Ekle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@model MagazineViewModel
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow rounded">
+            <div class="card-header bg-primary text-white">
+                <h4>Yeni Dergi Ekle</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div class="form-group mb-3">
+                        <label asp-for="Title"></label>
+                        <input asp-for="Title" class="form-control" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Description"></label>
+                        <textarea asp-for="Description" class="form-control"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="StartDate"></label>
+                        <input asp-for="StartDate" type="date" class="form-control" />
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="ISSN"></label>
+                        <input asp-for="ISSN" class="form-control" />
+                        <span asp-validation-for="ISSN" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Period"></label>
+                        <input asp-for="Period" class="form-control" />
+                        <span asp-validation-for="Period" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Purpose"></label>
+                        <textarea asp-for="Purpose" class="form-control"></textarea>
+                        <span asp-validation-for="Purpose" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Scope"></label>
+                        <textarea asp-for="Scope" class="form-control"></textarea>
+                        <span asp-validation-for="Scope" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="WritingRules"></label>
+                        <textarea asp-for="WritingRules" class="form-control"></textarea>
+                        <span asp-validation-for="WritingRules" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="JournalRules"></label>
+                        <textarea asp-for="JournalRules" class="form-control"></textarea>
+                        <span asp-validation-for="JournalRules" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="ImageUrl"></label>
+                        <input asp-for="ImageUrl" class="form-control" />
+                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="ImageName"></label>
+                        <input asp-for="ImageName" class="form-control" />
+                        <span asp-validation-for="ImageName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="PublisherId"></label>
+                        <input asp-for="PublisherId" class="form-control" />
+                        <span asp-validation-for="PublisherId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group text-right">
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

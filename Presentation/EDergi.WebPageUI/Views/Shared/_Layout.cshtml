@@ -9,7 +9,6 @@
     <title>@ViewData["Title"] - WebPageUI</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/WebPageUI.styles.css" asp-append-version="true" />
 </head>
 <body>
     @if (!isLoginPage)
@@ -51,15 +50,9 @@
         </footer>
     }
 
-    <!-- ✅ SCRIPTLER SIRALI ve HATASIZ -->
-    <!-- jQuery ilk sırada olmalı -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Doğrulama scriptleri jQuery'den sonra -->
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.12/jquery.validate.unobtrusive.min.js"></script>
-
-    <!-- Bootstrap ve site.js en son -->
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 

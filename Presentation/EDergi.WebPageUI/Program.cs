@@ -1,17 +1,23 @@
 ﻿using EDergi.Application.Abstractions;
+using EDergi.Application.Abstractions.Services;
+using EDergi.Application.Repostories;
+using EDergi.Domain.Entitites;
+using EDergi.Infrastructure.Services;
 using EDergi.Persistence.Concretes;
 using EDergi.Persistence.Contexts;
-using EDergi.Application.Abstractions.Services;
+using EDergi.Persistence.Repositories;
+using EDergi.Persistence.Repostories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using EDergi.Domain.Entitites;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// DbContext ayarı
 builder.Services.AddDbContext<EDergiDbContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
 
-builder.Services.AddIdentity<User, IdentityRole>(options =>
+// Identity ayarları (AppUser ve AppRole kullanılıyor!)
+builder.Services.AddIdentity<AppUser, AppRole>(options =>
 {
 	options.Password.RequireDigit = true;
 	options.Password.RequiredLength = 6;
@@ -25,6 +31,11 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddEntityFrameworkStores<EDergiDbContext>()
 .AddDefaultTokenProviders();
 
+
+builder.Services.AddScoped<RoleManager<AppRole>>();
+builder.Services.AddScoped<UserManager<AppUser>>();
+
+// Cookie ayarları
 builder.Services.ConfigureApplicationCookie(options =>
 {
 	options.LoginPath = "/Admin/Account/Login";
@@ -34,21 +45,49 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.SlidingExpiration = true;
 });
 
+// Authorization politikaları
+builder.Services.AddAuthorization(options =>
+{
+	options.AddPolicy("SysAdminOnly", policy => policy.RequireRole("SysAdmin"));
+	options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+	options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+});
+
+// DI servisleri
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IReadRepository<Author>, ReadRepository<Author>>();
+builder.Services.AddScoped<IWriteRepository<Author>, WriteRepository<Author>>();
+builder.Services.AddScoped<IMagazineService, MagazineService>();
+builder.Services.AddScoped<IReadRepository<Magazine>, ReadRepository<Magazine>>();
+builder.Services.AddScoped<IWriteRepository<Magazine>, WriteRepository<Magazine>>();
+// UserManagement ve RoleManagement için servisler
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 
+
+
+
+
+
+
+// MVC, Session, HTTP Client
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
+// Hata sayfası
 if (!app.Environment.IsDevelopment())
 {
 	app.UseExceptionHandler("/Home/Error");
 	app.UseHsts();
 }
 
+// Middleware
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
@@ -58,19 +97,60 @@ app.UseAuthorization();
 app.UseSession();
 
 app.MapControllerRoute(
-	name: "admin_default",
-	pattern: "admin",
+	name: "adminDashboard",
+	pattern: "Admin/Dashboard",
 	defaults: new { area = "Admin", controller = "Dashboard", action = "Index" });
 
-app.MapControllerRoute(
-	name: "areas",
-	pattern: "{area:exists}/{controller=Account}/{action=Login}/{id?}");
+//app.MapControllerRoute(
+//	name: "adminLogin",
+//	pattern: "Admin",
+//	defaults: new { area = "Admin", controller = "Account", action = "Login" });
 
-// ❗ Kullanıcı siteye direkt girerse login'e gitsin:
+app.MapControllerRoute(
+	name: "adminSetNewPassword",
+	pattern: "Admin/Account/SetNewPassword",
+	defaults: new { area = "Admin", controller = "Account", action = "SetNewPassword" });
+
+app.MapControllerRoute(
+	name: "adminForgotPassword",
+	pattern: "Admin/Account/ForgotPassword",
+	defaults: new { area = "Admin", controller = "Account", action = "ForgotPassword" });
+
+app.MapControllerRoute(
+	name: "adminRegister",
+	pattern: "Admin/Account/Register",
+	defaults: new { area = "Admin", controller = "Account", action = "Register" });
+
+app.MapControllerRoute(
+	name: "adminChangePassword",
+	pattern: "Admin/Account/ChangePassword",
+	defaults: new { area = "Admin", controller = "Account", action = "ChangePassword" });
+
+app.MapControllerRoute(
+	name: "adminDefault",
+	pattern: "Admin",
+	defaults: new { area = "Admin", controller = "Account", action = "Login" });
+
+app.MapControllerRoute(
+	name: "adminLogout",
+	pattern: "Admin/Account/Logout",
+	defaults: new { area = "Admin", controller = "Account", action = "Logout" });
+
+//app.MapControllerRoute(
+//	name: "adminLogin",
+//	pattern: "Admin/Account/Login",
+//	defaults: new { area = "Admin", controller = "Account", action = "Login" });
+// UserManagement ve RoleManagement için route'lar
+
+
+app.MapControllerRoute(
+		name: "areas",
+		pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+	);
+
 app.MapControllerRoute(
 	name: "default",
-	pattern: "{controller=Account}/{action=Login}/{id?}",
-	defaults: new { area = "Admin" });
+	pattern: "{controller=Home}/{action=Index}/{id?}");
 
 
 app.Run();

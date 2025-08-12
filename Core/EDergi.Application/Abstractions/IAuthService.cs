@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using EDergi.Application.DTOs;
 using System.Threading.Tasks;
-using EDergi.Application.DTOs;
 
 namespace EDergi.Application.Abstractions
 {
@@ -11,8 +7,12 @@ namespace EDergi.Application.Abstractions
 	{
 		Task<string> RegisterAsync(RegisterDto model);
 		Task<LoginResultDto> LoginAsync(LoginDto model);
+		Task<bool> ForgotPasswordAsync(ForgotPasswordDto request);
+		Task<bool> ResetPasswordAsync(ResetPasswordDto request);
+		Task<bool> LogoutAsync();
+		Task<bool> SetPasswordAsync(SetPasswordDto model);
+		Task<bool> SendTemporaryPasswordAsync(string email, string tempPassword, string userName);
 
-		
+
 	}
 }
-

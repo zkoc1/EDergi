@@ -1,0 +1,35 @@
+﻿@using EDergi.WebPageUI.Areas.Admin.Models
+@model List<UserRolesViewModel>
+@{
+    ViewData["Title"] = "Kullanıcı Listesi";
+}
+<div class="container">
+    <h2>Kullanıcı Listesi</h2>
+    <a asp-action="Create" class="btn btn-primary">Yeni Kullanıcı Ekle</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Ad</th>
+                <th>Soyad</th>
+                <th>Roller</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Email</td>
+                    <td>@user.FirstName</td>
+                    <td>@user.LastName</td>
+                    <td>@string.Join(", ", user.Roles)</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-warning">Düzenle</a>
+                        <a asp-action="Delete" asp-route-id="@user.UserId" class="btn btn-danger">Sil</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

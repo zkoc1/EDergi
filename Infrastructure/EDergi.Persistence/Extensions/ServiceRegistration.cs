@@ -2,6 +2,7 @@
 using EDergi.Application.Abstractions.Services;
 using EDergi.Application.Interfaces.Services;
 using EDergi.Application.Repostories;
+using EDergi.Infrastructure.Services;
 using EDergi.Persistence.Concretes;
 using EDergi.Persistence.Contexts;
 using EDergi.Persistence.Repositories;
@@ -36,6 +37,12 @@ namespace EDergi.Persistence
 			services.AddScoped<IViewStatsService, ViewStatsService>();
 			services.AddScoped<IVolumeService, VolumeService>();
 		    services.AddScoped<ITokenService, TokenService>();
+			services.AddScoped<IEndpointService, EndpointService>();
+			services.AddScoped<IMenuService, MenuService>();
+			services.AddScoped<IUserService, UserService>();
+			services.AddScoped<IRoleService, RoleService>();
+			services.AddScoped<IEmailService, EmailService>();
+
 
 
 
