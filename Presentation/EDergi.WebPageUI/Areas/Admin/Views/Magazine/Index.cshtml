@@ -7,7 +7,6 @@
 
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <!-- Kolon genişliğini küçült -->
         <div class="card shadow rounded">
             <div class="card-header bg-primary text-white">
                 <div class="d-flex justify-content-between align-items-center">
@@ -56,6 +55,18 @@
                                                onclick="return confirm('Bu dergiyi silmek istediğinize emin misiniz?')">
                                                 <i class="fas fa-trash"></i>
                                             </a>
+                                            <a asp-controller="Volume" asp-action="Index" asp-route-magazineId="@magazine.Id"
+                                               class="btn btn-outline-secondary" title="Ciltler">
+                                                <i class="fas fa-book"></i>
+                                            </a>
+                                            <a asp-controller="MDocument" asp-action="Index" asp-route-magazineId="@magazine.Id"
+                                               class="btn btn-outline-info" title="Dokümanlar">
+                                                <i class="fas fa-file"></i>
+                                            </a>
+                                            <a asp-controller="ReadIndex" asp-action="Index" asp-route-magazineId="@magazine.Id"
+                                               class="btn btn-outline-warning" title="İndeksler">
+                                                <i class="fas fa-list"></i>
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
@@ -67,54 +78,3 @@
         </div>
     </div>
 </div>
-
-@section Styles {
-    <style>
-        .card {
-            border: none;
-            border-radius: 10px;
-            overflow: hidden;
-            max-width: 100%;
-            margin: 0 auto;
-        }
-
-        .table th, .table td {
-            padding: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .btn-group-sm > .btn {
-            padding: 0.2rem 0.4rem;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-            max-width: 100%;
-        }
-
-        .col-md-8 {
-            flex: 0 0 66.666667%;
-            max-width: 66.666667%; <!--
-            Widget genişliğini küçült -->
-        }
-    </style>
-}
-
-@section Scripts {
-    <script>
-        $(document).ready(function() {
-            $('#magazineTable').DataTable({
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Turkish.json"
-                },
-                "responsive": true,
-                "dom": '<"top"f>rt<"bottom"lip><"clear">',
-                "columnDefs": [
-                    { "orderable": false, "targets": 3 }
-                ],
-                "pageLength": 10,
-                "autoWidth": false
-            });
-        });
-    </script>
-}

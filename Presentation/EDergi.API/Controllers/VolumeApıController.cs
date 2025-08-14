@@ -9,11 +9,11 @@ namespace EDergi.API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class VolumeController : ControllerBase
+	public class VolumeApıController : ControllerBase
 	{
 		private readonly IVolumeService _volumeService;
 
-		public VolumeController(IVolumeService volumeService)
+		public VolumeApıController(IVolumeService volumeService)
 		{
 			_volumeService = volumeService;
 		}
@@ -43,11 +43,9 @@ namespace EDergi.API.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Create([FromBody] VolumeCreateDto dto)
 		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
-
-			var created = await _volumeService.CreateAsync(dto);
-			return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+			var result = await _volumeService.CreateAsync(dto);
+			if (result!=null) return Ok("Volume başarıyla oluşturuldu.");
+			return BadRequest("Volume oluşturulamadı.");
 		}
 
 

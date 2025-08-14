@@ -12,7 +12,7 @@
                 <h4>Dergi Düzenle</h4>
             </div>
             <div class="card-body">
-                <form asp-action="Edit" method="post">
+                <form asp-action="Edit" method="post" enctype="multipart/form-data">
                     <input type="hidden" asp-for="Id" />
                     <div class="form-group mb-3">
                         <label asp-for="Title"></label>
@@ -60,20 +60,36 @@
                         <span asp-validation-for="JournalRules" class="text-danger"></span>
                     </div>
                     <div class="form-group mb-3">
-                        <label asp-for="ImageUrl"></label>
-                        <input asp-for="ImageUrl" class="form-control" />
-                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label asp-for="ImageName"></label>
-                        <input asp-for="ImageName" class="form-control" />
-                        <span asp-validation-for="ImageName" class="text-danger"></span>
+                        <label>Kapak Resmi Seçin</label>
+                        <div class="fileupload fileupload-new" data-provides="fileupload">
+                            <div class="input-append">
+                                <div class="uneditable-input">
+                                    <i class="fas fa-file fileupload-exists"></i>
+                                    <span class="fileupload-preview"></span>
+                                </div>
+                                <span class="btn btn-default btn-file">
+                                    <span class="fileupload-exists">Değiştir</span>
+                                    <span class="fileupload-new">Dosya Seç</span>
+                                    <input type="file" name="ImageFile" />
+                                </span>
+                                <a href="#" class="btn btn-default fileupload-exists" data-dismiss="fileupload">Kaldır</a>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group mb-3">
                         <label asp-for="PublisherId"></label>
-                        <input asp-for="PublisherId" class="form-control" />
+                        <select asp-for="PublisherId" class="form-control select2" asp-items="ViewBag.Publishers" data-placeholder="Yayıncı Seçin">
+                            <option value="">Yayıncı Seçin</option>
+                        </select>
                         <span asp-validation-for="PublisherId" class="text-danger"></span>
                     </div>
+
+                    <!-- ViewStats (Gizli Inputlar) -->
+                    <input type="hidden" asp-for="ViewStats.ViewCount" value="0" />
+                    <input type="hidden" asp-for="ViewStats.FavoriteCount" value="0" />
+                    <input type="hidden" asp-for="ViewStats.DownloadCount" value="0" />
+
+                    <!-- Kaydet ve İptal Butonları -->
                     <div class="form-group text-right">
                         <button type="submit" class="btn btn-primary">Güncelle</button>
                         <a asp-action="Index" class="btn btn-secondary">İptal</a>
@@ -83,9 +99,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

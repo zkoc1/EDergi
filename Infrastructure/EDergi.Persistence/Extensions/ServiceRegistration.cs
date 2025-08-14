@@ -1,8 +1,8 @@
 ﻿using EDergi.Application.Abstractions;
 using EDergi.Application.Abstractions.Services;
+using EDergi.Infrastructure.Services;
 using EDergi.Application.Interfaces.Services;
 using EDergi.Application.Repostories;
-using EDergi.Infrastructure.Services;
 using EDergi.Persistence.Concretes;
 using EDergi.Persistence.Contexts;
 using EDergi.Persistence.Repositories;
@@ -42,6 +42,8 @@ namespace EDergi.Persistence
 			services.AddScoped<IUserService, UserService>();
 			services.AddScoped<IRoleService, RoleService>();
 			services.AddScoped<IEmailService, EmailService>();
+			services.AddScoped<IFileUploadService, FileUploadService>();
+
 
 
 

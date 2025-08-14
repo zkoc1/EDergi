@@ -34,7 +34,7 @@ namespace EDergi.Persistence.Services
 
 		public Task<List<Volume>> GetByMagazineIdAsync(Guid magazineId)
 		{
-			var list = _readRepository.GetWhere(v => v.JMagazineId == magazineId).ToList();
+			var list = _readRepository.GetWhere(v => v.MagazineId == magazineId).ToList();
 			return Task.FromResult(list);
 		}
 
@@ -46,12 +46,15 @@ namespace EDergi.Persistence.Services
 				Title = dto.Title,
 				Year = dto.Year,
 				CreatedDate = DateTime.UtcNow,
-				Issues = dto.Issues?.Select(issueDto => new Issue
+				MagazineId=dto.MagazineId,
+
+		Issues = dto.Issues?.Select(issueDto => new Issue
 				{
 					Id = Guid.NewGuid(),
 					IssueNumber = issueDto.IssueNumber,
 					PublishDate = issueDto.PublishDate,
 					CreatedDate = DateTime.UtcNow,
+					VolumeId = issueDto.VolumeId,
 					Articles = issueDto.Articles?.Select(articleDto => new Article
 					{
 						Id = Guid.NewGuid(),
@@ -64,6 +67,7 @@ namespace EDergi.Persistence.Services
 						Reference = articleDto.Reference,
 						ArticleLink = articleDto.ArticleLink,
 						CreatedDate = DateTime.UtcNow,
+						IssueId = articleDto.IssueId,
 						IsApproved = articleDto.IsApproved,
 
 						ArticleAuthors = articleDto.AuthorIds?.Select(authorId => new ArticleAuthor

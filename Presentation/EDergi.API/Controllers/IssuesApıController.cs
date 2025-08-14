@@ -10,11 +10,11 @@ namespace EDergi.API.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	public class IssueController : ControllerBase
+	public class IssueApıController : ControllerBase
 	{
 		private readonly IIssueService _issueService;
 
-		public IssueController(IIssueService issueService)
+		public IssueApıController(IIssueService issueService)
 		{
 			_issueService = issueService;
 		}

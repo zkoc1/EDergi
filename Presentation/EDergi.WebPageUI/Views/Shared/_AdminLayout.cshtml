@@ -292,8 +292,6 @@
 					<div class="sidebar-toggle d-none d-md-block" data-toggle-class="sidebar-left-collapsed" data-target="html" data-fire-event="sidebar-left-toggle">
 						<i class="fas fa-bars" aria-label="Toggle sidebar"></i>
 					</div>
-				
-
 				</div>
 
 				<div class="nano">
@@ -342,6 +340,20 @@
 										
 									</ul>
 								</li>
+								<li class="nav-parent">
+									<a class="nav-link" href="#">
+										<i class="bx bx-book" aria-hidden="true"></i>
+										<span>Yayıncı Yönetimi</span>
+									</a>
+									<ul class="nav nav-children">
+										<li>
+											<a class="nav-link" asp-area="Admin" asp-controller="Publisher" asp-action="Index">
+												Yayıncı Listesi
+											</a>
+										</li>
+
+									</ul>
+								</li>
 
 								<li class="nav-parent">
 									<a class="nav-link" href="#">
@@ -355,6 +367,8 @@
 												Dergi Listesi
 											</a>
 										</li>
+										
+										
 									</ul>
 								</li>
 								@* <li class="nav-parent nav-expanded nav-active">
@@ -1009,17 +1023,48 @@
 						</div> *@
 					</div>
 
-					<script>
-						// Maintain Scroll Position
-						if (typeof localStorage !== 'undefined') {
-							if (localStorage.getItem('sidebar-left-position') !== null) {
-								var initialPosition = localStorage.getItem('sidebar-left-position'),
-									sidebarLeft = document.querySelector('#sidebar-left .nano-content');
-
-								sidebarLeft.scrollTop = initialPosition;
-							}
+					<style>
+						/* Sidebar kapalı görünüm */
+						html.sidebar-left-collapsed .nav-children {
+							display: none;
 						}
+
+						/* Açık olduğunda göster */
+						.nav-parent.open .nav-children {
+							display: block;
+						}
+
+						/* Tıklanabilir başlık stili */
+						.nav-parent > a {
+							cursor: pointer;
+						}
+					</style>
+
+					<script>
+						document.addEventListener("DOMContentLoaded", function () {
+							// Sayfa yüklenince tüm nav-parent menüler kapalı başlasın
+							document.querySelectorAll(".nav-parent").forEach(function (parent) {
+								parent.classList.remove("open");
+								let children = parent.querySelector(".nav-children");
+								if (children) children.style.display = "none";
+
+								// Sadece tıklayınca aç/kapat
+								parent.querySelector("a").addEventListener("click", function (e) {
+									e.preventDefault();
+									parent.classList.toggle("open");
+									if (parent.classList.contains("open")) {
+										children.style.display = "block";
+									} else {
+										children.style.display = "none";
+									}
+								});
+							});
+
+							// Başta sidebar kapalı gelsin
+							document.querySelector("html").classList.add("sidebar-left-collapsed");
+						});
 					</script>
+
 
 				</div>
 

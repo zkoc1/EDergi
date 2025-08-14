@@ -1,0 +1,44 @@
+﻿@model EDergi.Web.Areas.Admin.Models.IssueViewModel
+
+@{
+    ViewData["Title"] = "Sayı Düzenle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow rounded">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Sayı Düzenle</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="VolumeId" />
+
+                    <div class="form-group">
+                        <label asp-for="IssueNumber" class="control-label">Sayı Numarası</label>
+                        <input asp-for="IssueNumber" class="form-control" />
+                        <span asp-validation-for="IssueNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="PublishDate" class="control-label">Yayın Tarihi</label>
+                        <input asp-for="PublishDate" type="date" class="form-control" />
+                        <span asp-validation-for="PublishDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group text-right">
+                        <button type="submit" class="btn btn-primary">Güncelle</button>
+                        <a asp-action="Index" asp-route-volumeId="@Model.VolumeId" class="btn btn-secondary">İptal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

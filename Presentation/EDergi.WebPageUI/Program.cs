@@ -1,5 +1,6 @@
 ﻿using EDergi.Application.Abstractions;
 using EDergi.Application.Abstractions.Services;
+using EDergi.Application.Interfaces.Services;
 using EDergi.Application.Repostories;
 using EDergi.Domain.Entitites;
 using EDergi.Infrastructure.Services;
@@ -7,6 +8,7 @@ using EDergi.Persistence.Concretes;
 using EDergi.Persistence.Contexts;
 using EDergi.Persistence.Repositories;
 using EDergi.Persistence.Repostories;
+using EDergi.Persistence.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,12 +59,29 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IVolumeService, VolumeService>();
+builder.Services.AddScoped<IReadRepository<Volume>, ReadRepository<Volume>>();
+builder.Services.AddScoped<IWriteRepository<Volume>, WriteRepository<Volume>>();
+builder.Services.AddScoped<IIssueService, IssueService>();
+builder.Services.AddScoped<IReadRepository<Issue>, ReadRepository<Issue>>();
+builder.Services.AddScoped<IWriteRepository<Issue>, WriteRepository<Issue>>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IReadRepository<Author>, ReadRepository<Author>>();
 builder.Services.AddScoped<IWriteRepository<Author>, WriteRepository<Author>>();
+builder.Services.AddScoped<IPublisherService, PublisherService>();
+builder.Services.AddScoped<IReadRepository<Publisher>, ReadRepository<Publisher>>();
+builder.Services.AddScoped<IWriteRepository<Publisher>, WriteRepository<Publisher>>();
 builder.Services.AddScoped<IMagazineService, MagazineService>();
 builder.Services.AddScoped<IReadRepository<Magazine>, ReadRepository<Magazine>>();
 builder.Services.AddScoped<IWriteRepository<Magazine>, WriteRepository<Magazine>>();
+builder.Services.AddScoped<IReadIndexService, ReadIndexService>();
+builder.Services.AddScoped<IReadRepository<ReadIndex>, ReadRepository<ReadIndex>>();
+builder.Services.AddScoped<IWriteRepository<ReadIndex>, WriteRepository<ReadIndex>>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<IReadRepository<MDocument>, ReadRepository<MDocument>>();
+builder.Services.AddScoped<IWriteRepository<MDocument>, WriteRepository<MDocument>>();
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+
 // UserManagement ve RoleManagement için servisler
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();

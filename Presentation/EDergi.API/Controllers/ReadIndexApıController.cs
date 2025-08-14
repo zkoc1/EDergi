@@ -9,11 +9,11 @@ namespace EDergi.API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class ReadIndexController : ControllerBase
+	public class ReadIndexApıController : ControllerBase
 	{
 		private readonly IReadIndexService _readIndexService;
 
-		public ReadIndexController(IReadIndexService readIndexService)
+		public ReadIndexApıController(IReadIndexService readIndexService)
 		{
 			_readIndexService = readIndexService;
 		}

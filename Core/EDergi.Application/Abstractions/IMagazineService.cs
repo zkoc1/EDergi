@@ -1,5 +1,6 @@
-﻿using EDergi.Domain.Entitites;
-using EDergi.Application.DTOs;
+﻿using EDergi.Application.DTOs;
+using EDergi.Domain.Entitites;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace EDergi.Application.Abstractions
 		Task<bool> CreateAsync(MagazineCreateDto dto);
 
 		Task UpdateAsync(Magazine magazine);
-		Task<bool> DeleteAsync(Guid id);
+		Task DeleteAsync(Guid id);
 	
 
 	}

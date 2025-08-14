@@ -1,0 +1,41 @@
+﻿@model List<EDergi.Application.DTOs.ReadIndexDto>
+@{
+    ViewData["Title"] = "Dizinler";
+}
+
+<div class="card shadow-sm rounded" style="max-width: 800px; margin: auto; font-size: 0.9rem;">
+    <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center p-2">
+        <h6 class="m-0">İndeksler</h6>
+        <a asp-action="Create" asp-route-magazineId="@ViewBag.MagazineId" class="btn btn-light btn-sm">
+            <i class="fas fa-plus"></i> Yeni
+        </a>
+    </div>
+    <div class="card-body p-2">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success py-1 px-2 mb-2" style="font-size:0.85rem;">
+                @TempData["Success"]
+            </div>
+        }
+
+        <table class="table table-bordered table-sm align-middle mb-0" style="font-size: 0.85rem;">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 60%;">Ad</th>
+                    <th style="width: 40%;">Resim</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>
+                            <img src="@item.ImageUrl" alt="@item.ImageName" style="height:50px; object-fit:cover; border-radius:4px;" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

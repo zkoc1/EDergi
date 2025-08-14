@@ -12,6 +12,7 @@ namespace EDergi.Application.Repostories
 		IQueryable<T> GetAll();
 		IQueryable<T> GetWhere(Expression<Func<T, bool>> predicate);
 		Task<T> GetSingleAsync(Expression<Func<T, bool>> predicate);
+		Task<List<T>> GetWhereAsync(Expression<Func<T, bool>> predicate);
 		Task<T> GetByIdAsync(Guid id);
 		Task<List<T>> GetAllAsync();
 	

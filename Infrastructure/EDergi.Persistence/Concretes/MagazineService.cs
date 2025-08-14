@@ -1,8 +1,9 @@
 ﻿using EDergi.Application.Abstractions;
+using EDergi.Application.DTOs;
 using EDergi.Application.Interfaces.Services;
 using EDergi.Application.Repostories;
 using EDergi.Domain.Entitites;
-using EDergi.Application.DTOs;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,12 @@ namespace EDergi.Persistence.Concretes
 	{
 		private readonly IReadRepository<Magazine> _readRepository;
 		private readonly IWriteRepository<Magazine> _writeRepository;
-
+		private readonly IFileUploadService _fileUploadService;
 		public MagazineService(IReadRepository<Magazine> readRepository, IWriteRepository<Magazine> writeRepository)
 		{
 			_readRepository = readRepository;
 			_writeRepository = writeRepository;
+			
 		}
 
 		public async Task<List<Magazine>> GetAllAsync()
@@ -33,10 +35,14 @@ namespace EDergi.Persistence.Concretes
 					 Title = m.Title,
 					 ImageUrl = m.ImageUrl,
 					 ISSN = m.ISSN,
+					 StartDate=m.StartDate,
 					 ViewStats = new ViewStats
 					 {
 						 ViewCount = m.ViewStats.ViewCount,
-						 Magazine = null // Döngüsel referansı kaldır
+						 Id = m.ViewStats.Id,
+						 MagazineId = m.Id,
+						 FavoriteCount = m.ViewStats.FavoriteCount,
+						 DownloadCount = m.ViewStats.DownloadCount
 					 }
 				 })
 				.ToListAsync();
@@ -54,6 +60,7 @@ namespace EDergi.Persistence.Concretes
 		public async Task<bool> CreateAsync(MagazineCreateDto dto)
 		{
 			var magazineId = Guid.NewGuid();
+			
 
 			var magazine = new Magazine
 			{
@@ -74,6 +81,7 @@ namespace EDergi.Persistence.Concretes
 				ViewStats = new ViewStats
 				{
 					Id = Guid.NewGuid(),
+					MagazineId = magazineId,
 					ViewCount = dto.ViewStats?.ViewCount ?? 0,
 					FavoriteCount = dto.ViewStats?.FavoriteCount ?? 0,
 					DownloadCount = dto.ViewStats?.DownloadCount ?? 0
@@ -84,6 +92,7 @@ namespace EDergi.Persistence.Concretes
 					Id = Guid.NewGuid(),
 					FileName = doc.FileName,
 					FilePath = doc.FilePath,
+					MagazineId =magazineId,
 					CreatedDate = doc.CreatedDate ?? DateTime.UtcNow
 				}).ToList(),
 
@@ -101,14 +110,15 @@ namespace EDergi.Persistence.Concretes
 					Id = Guid.NewGuid(),
 					Title = volume.Title,
 					Year = volume.Year,
-					JMagazineId = magazineId,
+					MagazineId = magazineId,
 					Issues = volume.Issues?.Select(issue => new Issue
 					{
 						Id = Guid.NewGuid(),
 						IssueNumber = issue.IssueNumber,
 						PublishDate = issue.PublishDate,
+						VolumeId = issue.VolumeId,
 						Articles = issue.Articles?.Select(articleDto => new Article
-						{
+						{   
 							Id = Guid.NewGuid(),
 							Title = articleDto.Title,
 							Description = articleDto.Description,
@@ -118,12 +128,14 @@ namespace EDergi.Persistence.Concretes
 							ProjectNumber = articleDto.ProjectNumber,
 							Reference = articleDto.Reference,
 							ArticleLink = articleDto.ArticleLink,
+							IssueId = articleDto.IssueId,
 							CreatedDate = DateTime.UtcNow,
 							IsApproved = articleDto.IsApproved,
 
 							// 🔧 Doğru şekilde ArticleAuthor ilişkisi kuruluyor
 							ArticleAuthors = articleDto.AuthorIds?.Select(authorId => new ArticleAuthor
 							{
+							
 								AuthorId = authorId
 							}).ToList()
 
@@ -145,15 +157,13 @@ namespace EDergi.Persistence.Concretes
 			await _writeRepository.UpdateAsync(magazine);
 		}
 
-		public async Task<bool> DeleteAsync(Guid id)
+		public async Task DeleteAsync(Guid id)
 		{
-			var magazine = await _readRepository.GetSingleAsync(m => m.Id == id);
+			var magazine = await _readRepository.GetSingleAsync(a => a.Id == id);
 			if (magazine != null)
 			{
 				await _writeRepository.RemoveAsync(magazine);
-				return true;
 			}
-			return false;
 		}
 	}
 }

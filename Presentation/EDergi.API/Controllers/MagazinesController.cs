@@ -10,15 +10,26 @@ namespace EDergi.API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class MagazineController : ControllerBase
+	public class MagazinesController : ControllerBase
 	{
 		private readonly IMagazineService _magazineService;
+		
 
-		public MagazineController(IMagazineService magazineService)
+
+		public MagazinesController(IMagazineService magazineService)
 		{
 			_magazineService = magazineService;
-		}
+			
 
+		}
+		[HttpPost]
+		public async Task<IActionResult> CreateMagazine([FromBody] MagazineCreateDto dto)
+		{
+
+			var result = await _magazineService.CreateAsync(dto);
+			if (result) return Ok("Magazine başarıyla oluşturuldu.");
+			return BadRequest("Magazine oluşturulamadı.");
+		}
 		[HttpGet]
 		public async Task<IActionResult> GetAll()
 		{
@@ -34,20 +45,13 @@ namespace EDergi.API.Controllers
 			return Ok(magazine);
 		}
 
-		[HttpPost]
-		public async Task<IActionResult> CreateMagazine([FromBody] MagazineCreateDto dto)
-		{
-			var result = await _magazineService.CreateAsync(dto);
-			if (result) return Ok("Magazine başarıyla oluşturuldu.");
-			return BadRequest("Magazine oluşturulamadı.");
-		}
+
 
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(Guid id)
 		{
-			var deleted = await _magazineService.DeleteAsync(id);
-			if (!deleted) return NotFound();
-			return NoContent();
+			await _magazineService.DeleteAsync(id);
+			return Ok();
 		}
 	}
 }

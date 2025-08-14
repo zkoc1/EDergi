@@ -1,0 +1,43 @@
+﻿<!-- Areas/Admin/Views/MDocument/Create.cshtml -->
+@model EDergi.Web.Areas.Admin.Models.MDocumentCreateViewModel
+
+@{
+    ViewData["Title"] = "Yeni Doküman Ekle";
+    var magazineId = Context.Request.Query["magazineId"].ToString();
+    if (string.IsNullOrEmpty(magazineId) && ViewBag.MagazineId != null)
+    {
+        magazineId = ViewBag.MagazineId.ToString();
+    }
+    Model.MagazineId = Guid.Parse(magazineId);
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow rounded">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Yeni Doküman Ekle</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="MagazineId" value="@magazineId" />
+
+                    <div class="form-group">
+                        <label for="files" class="control-label">Dosyalar</label>
+                        <input name="files" type="file" multiple class="form-control-file" />
+                    </div>
+
+                    <div class="form-group text-right">
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

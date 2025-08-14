@@ -8,11 +8,11 @@ namespace EDergi.API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class PublisherController : ControllerBase
+	public class PublisherApıController : ControllerBase
 	{
 		private readonly IPublisherService _publisherService;
 
-		public PublisherController(IPublisherService publisherService)
+		public PublisherApıController(IPublisherService publisherService)
 		{
 			_publisherService = publisherService;
 		}

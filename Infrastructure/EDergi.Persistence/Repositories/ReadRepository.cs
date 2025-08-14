@@ -45,6 +45,11 @@ namespace EDergi.Persistence.Repostories
 		{
 			return await Table.AsNoTracking().FirstOrDefaultAsync(predicate);
 		}
+		public async Task<List<T>> GetWhereAsync(Expression<Func<T, bool>> predicate)
+		{
+			return await _context.Set<T>().Where(predicate).ToListAsync();
+		}
+
 
 		public IQueryable<T> GetWhere(Expression<Func<T, bool>> predicate)
 		{

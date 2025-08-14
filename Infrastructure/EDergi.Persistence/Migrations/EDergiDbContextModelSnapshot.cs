@@ -603,9 +603,6 @@ namespace EDergi.Persistence.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("JMagazineId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("MagazineId")
                         .HasColumnType("uniqueidentifier");
 

@@ -10,11 +10,11 @@ namespace EDergi.API.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	public class MDocumentController : ControllerBase
+	public class MDocumentApıController : ControllerBase
 	{
 		private readonly IDocumentService _mDocumentService;
 
-		public MDocumentController(IDocumentService mDocumentService)
+		public MDocumentApıController(IDocumentService mDocumentService)
 		{
 			_mDocumentService = mDocumentService;
 		}

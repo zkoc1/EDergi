@@ -1,0 +1,35 @@
+﻿@using EDergi.Web.Areas.Admin.Models
+@{
+    ViewData["Title"] = "Yeni Yayıncı Ekle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@model PublisherViewModel
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow rounded">
+            <div class="card-header bg-primary text-white">
+                <h4>Yeni Yayıncı Ekle</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div class="form-group mb-3">
+                        <label asp-for="Name"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group text-right">
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,145 +1,165 @@
 ﻿using EDergi.Application.Abstractions;
-using EDergi.Application.Abstractions.Services;
 using EDergi.Application.DTOs;
-using EDergi.Domain.Entitites;
+using EDergi.Application.Interfaces.Services;
 using EDergi.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace EDergi.Web.Areas.Admin.Controllers
+[Area("Admin")]
+public class MagazineController : Controller
 {
-	[Area("Admin")]
-	public class MagazineController : Controller
+	private readonly IMagazineService _magazineService;
+	private readonly IPublisherService _publisherService;
+	private readonly IFileUploadService _fileUploadService;
+
+	public MagazineController(IMagazineService magazineService, IPublisherService publisherService, IFileUploadService fileUploadService)
 	{
-		private readonly IMagazineService _magazineService;
+		_magazineService = magazineService;
+		_publisherService = publisherService;
+		_fileUploadService = fileUploadService;
 
-		public MagazineController(IMagazineService magazineService)
+	}
+
+	public async Task<IActionResult> Index()
+	{
+		var magazines = await _magazineService.GetAllAsync();
+		var list = magazines.Select(m => new MagazineViewModel
 		{
-			_magazineService = magazineService;
+			Id = m.Id,
+			Title = m.Title,
+			Description = m.Description,
+			StartDate = m.StartDate,
+			ISSN = m.ISSN,
+			Period = m.Period,
+			Purpose = m.Purpose,
+			Scope = m.Scope,
+			WritingRules = m.WritingRules,
+			JournalRules = m.JournalRules,
+			PublisherId = m.PublisherId,
+			ViewStats = new ViewStatsDto { ViewCount = 0, FavoriteCount = 0, DownloadCount = 0 },
+		
+		}).ToList();
+
+		return View(list);
+	}
+
+	public async Task<IActionResult> Create()
+	{
+		var publishers = await _publisherService.GetAllAsync();
+		ViewBag.Publishers = new SelectList(publishers, "Id", "Name");
+		return View(new MagazineViewModel());
+	}
+
+	[HttpPost]
+	public async Task<IActionResult> Create(MagazineViewModel model, IFormFile ImageFile)
+	{
+		
+		if (!ModelState.IsValid)
+		{
+			var publishers = await _publisherService.GetAllAsync();
+			ViewBag.Publishers = new SelectList(publishers, "Id", "Name");
+			return View(model);
 		}
 
-		public async Task<IActionResult> Index()
-		{
-			var magazines = await _magazineService.GetAllAsync();
-			var list = magazines.Select(m => new MagazineViewModel
-			{
-				Id = m.Id,
-				Title = m.Title,
-				Description = m.Description,
-				StartDate = m.StartDate,
-				ISSN = m.ISSN,
-				Period = m.Period,
-				Purpose = m.Purpose,
-				Scope = m.Scope,
-				WritingRules = m.WritingRules,
-				JournalRules = m.JournalRules,
-				ImageUrl = m.ImageUrl,
-				ImageName = m.ImageName,
-				PublisherId = m.PublisherId
-			}).ToList();
+		// Dosya yükleme işlemleri
 
-			return View(list);
+		var (fileName, fileUrl) = await _fileUploadService.UploadFileAsync(ImageFile);
+		 var ImageUrl = fileUrl;
+		 var ImageName = fileName;
+		var dto = new MagazineCreateDto
+		{
+			Title = model.Title,
+			Description = model.Description,
+			StartDate = model.StartDate,
+			ISSN = model.ISSN,
+			Period = model.Period,
+			Purpose = model.Purpose,
+			Scope = model.Scope,
+			WritingRules = model.WritingRules,
+			JournalRules = model.JournalRules,
+			ImageUrl = ImageUrl,
+			ImageName = ImageName,
+			PublisherId = model.PublisherId,
+		};
+
+		await _magazineService.CreateAsync(dto);
+		return RedirectToAction(nameof(Index));
+	}
+
+	public async Task<IActionResult> Edit(Guid id)
+	{
+		var magazine = await _magazineService.GetByIdAsync(id);
+		if (magazine == null) return NotFound();
+
+		var publishers = await _publisherService.GetAllAsync();
+		ViewBag.Publishers = new SelectList(publishers, "Id", "Name", magazine.PublisherId);
+
+		var vm = new MagazineViewModel
+		{
+			Id = magazine.Id,
+			Title = magazine.Title,
+			Description = magazine.Description,
+			StartDate = magazine.StartDate,
+			ISSN = magazine.ISSN,
+			Period = magazine.Period,
+			Purpose = magazine.Purpose,
+			Scope = magazine.Scope,
+			WritingRules = magazine.WritingRules,
+			JournalRules = magazine.JournalRules,
+			PublisherId = magazine.PublisherId,
+			ViewStats = new ViewStatsDto { ViewCount = 0, FavoriteCount = 0, DownloadCount = 0 },
+			
+		};
+
+		return View(vm);
+	}
+
+	[HttpPost]
+	public async Task<IActionResult> Edit(MagazineViewModel model)
+	{
+		if (!ModelState.IsValid)
+		{
+			var publishers = await _publisherService.GetAllAsync();
+			ViewBag.Publishers = new SelectList(publishers, "Id", "Name", model.PublisherId);
+			return View(model);
 		}
 
-		public IActionResult Create()
+
+		
+		var magazine = await _magazineService.GetByIdAsync(model.Id);
+		if (magazine == null)
 		{
-			return View(new MagazineViewModel());
-		}
-
-		[HttpPost]
-		public async Task<IActionResult> Create(MagazineViewModel model)
-		{
-			if (!ModelState.IsValid) return View(model);
-
-			var dto = new MagazineCreateDto
-			{
-				Title = model.Title,
-				Description = model.Description,
-				StartDate = model.StartDate,
-				ISSN = model.ISSN,
-				Period = model.Period,
-				Purpose = model.Purpose,
-				Scope = model.Scope,
-				WritingRules = model.WritingRules,
-				JournalRules = model.JournalRules,
-				ImageUrl = model.ImageUrl,
-				ImageName = model.ImageName,
-				PublisherId = model.PublisherId
-			};
-
-			await _magazineService.CreateAsync(dto);
+			TempData["Error"] = "Dergi bulunamadı.";
 			return RedirectToAction(nameof(Index));
 		}
 
-		public async Task<IActionResult> Edit(Guid id)
+		magazine.Title = model.Title;
+		magazine.Description = model.Description;
+		magazine.StartDate = model.StartDate;
+		magazine.ISSN = model.ISSN;
+		magazine.Period = model.Period;
+		magazine.Purpose = model.Purpose;
+		magazine.Scope = model.Scope;
+		magazine.WritingRules = model.WritingRules;
+		magazine.JournalRules = model.JournalRules;
+		magazine.PublisherId = model.PublisherId;
+
+		try
 		{
-			var magazine = await _magazineService.GetByIdAsync(id);
-			if (magazine == null) return NotFound();
-
-			var vm = new MagazineViewModel
-			{
-				Id = magazine.Id,
-				Title = magazine.Title,
-				Description = magazine.Description,
-				StartDate = magazine.StartDate,
-				ISSN = magazine.ISSN,
-				Period = magazine.Period,
-				Purpose = magazine.Purpose,
-				Scope = magazine.Scope,
-				WritingRules = magazine.WritingRules,
-				JournalRules = magazine.JournalRules,
-				ImageUrl = magazine.ImageUrl,
-				ImageName = magazine.ImageName,
-				PublisherId = magazine.PublisherId
-			};
-
-			return View(vm);
+			await _magazineService.UpdateAsync(magazine);
+			TempData["Success"] = "Dergi başarıyla güncellendi.";
+		}
+		catch (Exception ex)
+		{
+			TempData["Error"] = "Dergi güncellenirken bir hata oluştu: " + ex.Message;
 		}
 
-		[HttpPost]
-		public async Task<IActionResult> Edit(MagazineViewModel model)
-		{
-			if (!ModelState.IsValid) return View(model);
+		return RedirectToAction(nameof(Index));
+	}
 
-			var magazine = await _magazineService.GetByIdAsync(model.Id);
-			if (magazine == null)
-			{
-				TempData["Error"] = "Dergi bulunamadı.";
-				return RedirectToAction(nameof(Index));
-			}
-
-			magazine.Title = model.Title;
-			magazine.Description = model.Description;
-			magazine.StartDate = model.StartDate;
-			magazine.ISSN = model.ISSN;
-			magazine.Period = model.Period;
-			magazine.Purpose = model.Purpose;
-			magazine.Scope = model.Scope;
-			magazine.WritingRules = model.WritingRules;
-			magazine.JournalRules = model.JournalRules;
-			magazine.ImageUrl = model.ImageUrl;
-			magazine.ImageName = model.ImageName;
-			magazine.PublisherId = model.PublisherId;
-
-			try
-			{
-				await _magazineService.UpdateAsync(magazine);
-				TempData["Success"] = "Dergi başarıyla güncellendi.";
-			}
-			catch (Exception ex)
-			{
-				TempData["Error"] = "Dergi güncellenirken bir hata oluştu: " + ex.Message;
-			}
-
-			return RedirectToAction(nameof(Index));
-		}
-
-		public async Task<IActionResult> Delete(Guid id)
-		{
-			await _magazineService.DeleteAsync(id);
-			return RedirectToAction(nameof(Index));
-		}
+	public async Task<IActionResult> Delete(Guid id)
+	{
+		await _magazineService.DeleteAsync(id);
+		return RedirectToAction(nameof(Index));
 	}
 }

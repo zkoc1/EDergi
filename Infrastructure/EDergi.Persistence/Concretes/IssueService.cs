@@ -40,6 +40,7 @@ namespace EDergi.Persistence.Concretes
 				IssueNumber = dto.IssueNumber,
 				PublishDate = dto.PublishDate,
 				CreatedDate = DateTime.UtcNow,
+				VolumeId=dto.VolumeId,
 				Articles = dto.Articles?.Select(articleDto => new Article
 				{
 					Id = Guid.NewGuid(),
@@ -52,7 +53,8 @@ namespace EDergi.Persistence.Concretes
 					Reference = articleDto.Reference,
 					ArticleLink = articleDto.ArticleLink,
 					CreatedDate = DateTime.UtcNow,
-					IsApproved= articleDto.IsApproved,
+					IssueId = articleDto.IssueId,
+					IsApproved = articleDto.IsApproved,
 
 					// ArticleAuthor ilişkisi kuruluyor
 					ArticleAuthors = articleDto.AuthorIds?.Select(authorId => new ArticleAuthor
@@ -70,6 +72,11 @@ namespace EDergi.Persistence.Concretes
 		{
 			await _writeRepository.UpdateAsync(issue);
 		}
+		public async Task<List<Issue>> GetByVolumeIdAsync(Guid volumeId)
+		{
+			return await _readRepository.GetWhereAsync(i => i.VolumeId == volumeId);
+		}
+
 
 		public async Task DeleteAsync(Guid id)
 		{

@@ -12,6 +12,7 @@ namespace EDergi.Application.Abstractions
 		Task<List<Issue>> GetAllAsync();
 		Task<Issue> GetByIdAsync(Guid id);
 		Task CreateAsync(IssueCreateDto dto);
+		Task<List<Issue>> GetByVolumeIdAsync(Guid volumeId);
 		Task UpdateAsync(Issue issue);
 		Task DeleteAsync(Guid id);
 	}
