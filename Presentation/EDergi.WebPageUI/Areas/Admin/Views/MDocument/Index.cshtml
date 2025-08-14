@@ -3,8 +3,10 @@
 
 @{
     ViewData["Title"] = "Dokümanlar";
-    var magazineId = ViewContext.RouteData.Values["magazineId"]?.ToString();
-    if (string.IsNullOrEmpty(magazineId) && ViewBag.magazineId != null)
+    var magazineId = Context.Request.Query["magazineId"].ToString();
+
+    // Eğer query string'den gelmediyse, ViewBag'den kontrol edelim
+    if (string.IsNullOrEmpty(magazineId) && ViewBag.MagazineId != null)
     {
         magazineId = ViewBag.MagazineId.ToString();
     }

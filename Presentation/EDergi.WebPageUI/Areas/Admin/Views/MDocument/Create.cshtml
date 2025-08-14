@@ -4,7 +4,11 @@
 @{
     ViewData["Title"] = "Yeni Doküman Ekle";
     var magazineId = Context.Request.Query["magazineId"].ToString();
-    
+    if (string.IsNullOrEmpty(magazineId) && ViewBag.MagazineId != null)
+    {
+        magazineId = ViewBag.MagazineId.ToString();
+    }
+    Model.MagazineId = Guid.Parse(magazineId);
 }
 
 <div class="row justify-content-center">
