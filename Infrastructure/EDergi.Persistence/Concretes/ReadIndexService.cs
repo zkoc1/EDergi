@@ -31,10 +31,11 @@ namespace EDergi.Persistence.Services
 			return await _readRepository.GetSingleAsync(r => r.Id == id);
 		}
 
+
 		public Task<List<ReadIndex>> GetByMagazineIdAsync(Guid magazineId)
 		{
-			var list = _readRepository.GetWhere(r => r.MagazineId == magazineId).ToList();
-			return Task.FromResult(list);
+			var readIndices = _readRepository.GetWhere(d => d.MagazineId == magazineId).ToList();
+			return Task.FromResult(readIndices);
 		}
 
 		public async Task<ReadIndex> CreateAsync(ReadIndex readIndex)
@@ -42,6 +43,7 @@ namespace EDergi.Persistence.Services
 			await _writeRepository.AddAsync(readIndex);
 			return readIndex;
 		}
+
 
 		public async Task<ReadIndex> UpdateAsync(ReadIndex readIndex)
 		{

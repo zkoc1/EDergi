@@ -74,6 +74,9 @@ builder.Services.AddScoped<IWriteRepository<Publisher>, WriteRepository<Publishe
 builder.Services.AddScoped<IMagazineService, MagazineService>();
 builder.Services.AddScoped<IReadRepository<Magazine>, ReadRepository<Magazine>>();
 builder.Services.AddScoped<IWriteRepository<Magazine>, WriteRepository<Magazine>>();
+builder.Services.AddScoped<IArticleService, ArticleService>();
+builder.Services.AddScoped<IReadRepository<Article>, ReadRepository<Article>>();
+builder.Services.AddScoped<IWriteRepository<Article>, WriteRepository<Article>>();
 builder.Services.AddScoped<IReadIndexService, ReadIndexService>();
 builder.Services.AddScoped<IReadRepository<ReadIndex>, ReadRepository<ReadIndex>>();
 builder.Services.AddScoped<IWriteRepository<ReadIndex>, WriteRepository<ReadIndex>>();

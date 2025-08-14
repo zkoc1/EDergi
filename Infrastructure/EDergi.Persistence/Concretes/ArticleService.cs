@@ -89,6 +89,30 @@ namespace EDergi.Persistence.Concretes
 				await _writeRepository.RemoveAsync(article);
 			}
 		}
+		//public async Task<List<ArticleListDto>> GetByIssueIdAsync(Guid issueId)
+		//{
+		//	return await _readRepository.GetWhere(x => x.IssueId == issueId)
+		//		.Include(x => x.ArticleAuthors) // ArticleAuthors tablosunu dahil et
+		//		.Select(a => new ArticleListDto
+		//		{
+		//			Id = a.Id,
+		//			Title = a.Title,
+		//			Description = a.Description,
+		//			Keywords = a.Keywords,
+		//			PdfUrl = a.PdfUrl,
+		//			SupportingInstitution = a.SupportingInstitution,
+		//			ProjectNumber = a.ProjectNumber,
+		//			Reference = a.Reference,
+		//			ArticleLink = a.ArticleLink,
+		//			IssueId = a.IssueId,
+		//			IsApproved = a.IsApproved,
+		//			AuthorIds = a.ArticleAuthors.Select(aa => aa.AuthorId).ToList()
+		//		}).ToListAsync();
+		//}
+		public async Task<List<Article>> GetByIssueIdAsync(Guid issueId)
+		{
+			return await _readRepository.GetWhereAsync(i => i.IssueId == issueId);
+		}
 
 		public async Task UpdateAsync(Article article)
 		{

@@ -58,6 +58,11 @@
                                                onclick="return confirm('Bu sayıyı silmek istediğinize emin misiniz?')">
                                                 <i class="fas fa-trash"></i>
                                             </a>
+
+                                            <a asp-controller="Article" asp-action="Index" asp-route-issueId="@issue.Id"
+                                               class="btn btn-outline-success" title="Makaleler">
+                                                <i class="fas fa-plus-circle mr-1"></i> Makaleler
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>

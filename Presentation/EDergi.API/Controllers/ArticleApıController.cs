@@ -8,11 +8,11 @@ namespace EDergi.API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class ArticleController : ControllerBase
+	public class ArticleApıController : ControllerBase
 	{
 		private readonly IArticleService _articleService;
 
-		public ArticleController(IArticleService articleService)
+		public ArticleApıController(IArticleService articleService)
 		{
 			_articleService = articleService;
 		}
