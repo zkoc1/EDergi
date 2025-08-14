@@ -3,8 +3,8 @@
 
 @{
     ViewData["Title"] = "Dokümanlar";
-    var magazineId = Context.Request.Query["magazineId"].ToString();
-    if (string.IsNullOrEmpty(magazineId) && ViewBag.MagazineId != null)
+    var magazineId = ViewContext.RouteData.Values["magazineId"]?.ToString();
+    if (string.IsNullOrEmpty(magazineId) && ViewBag.magazineId != null)
     {
         magazineId = ViewBag.MagazineId.ToString();
     }
@@ -16,7 +16,7 @@
             <div class="card-header bg-primary text-white">
                 <div class="d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">Dokümanlar</h4>
-                    <a asp-action="Create" asp-route-magazineId="@ViewBag.MagazineId" class="btn btn-light btn-sm">
+                    <a asp-action="Create" asp-route-magazineId="@magazineId" class="btn btn-light btn-sm">
                         <i class="fas fa-plus mr-1"></i> Yeni Ekle
                     </a>
                 </div>

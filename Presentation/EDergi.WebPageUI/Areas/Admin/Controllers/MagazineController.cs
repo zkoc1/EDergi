@@ -80,6 +80,9 @@ public class MagazineController : Controller
 			ImageUrl = ImageUrl,
 			ImageName = ImageName,
 			PublisherId = model.PublisherId,
+			Volumes = new List<VolumeCreateDto>(),
+			Documents = new List<MDocumentDto>(),
+			Indexes = new List<ReadIndexDto>()
 		};
 
 		await _magazineService.CreateAsync(dto);
