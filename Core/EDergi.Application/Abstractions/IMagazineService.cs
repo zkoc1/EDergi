@@ -10,6 +10,7 @@ namespace EDergi.Application.Abstractions
 	public interface IMagazineService
 	{
 		Task<List<Magazine>> GetAllAsync();
+		Task<List<MagazineCreateDto>> GetAllAsync2();
 		Task<Magazine> GetByIdAsync(Guid id);
 		Task<bool> CreateAsync(MagazineCreateDto dto);
 

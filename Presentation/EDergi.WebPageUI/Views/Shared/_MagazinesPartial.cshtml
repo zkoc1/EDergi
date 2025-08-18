@@ -1,0 +1,30 @@
+﻿@model List<EDergi.Application.DTOs.MagazineCreateDto>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning text-center">Henüz hiç dergi bulunmamaktadır.</div>
+    return; // Render'ı durdur
+}
+
+<div class="row">
+    @foreach (var magazine in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <img src="@magazine.ImageUrl" class="card-img-top" alt="@magazine.Title" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">@magazine.Title</h5>
+                    <p class="card-text">@magazine.Description</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>ISSN:</strong> @magazine.ISSN</li>
+                        <li class="list-group-item"><strong>Başlangıç Tarihi:</strong> @magazine.StartDate.ToShortDateString()</li>
+                    </ul>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="@Url.Action("Details", "Magazines", new { id = magazine.Id })"
+                       class="btn btn-primary btn-sm w-100">Detaylar</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

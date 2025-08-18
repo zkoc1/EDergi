@@ -10,13 +10,13 @@ namespace EDergi.API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class MagazinesController : ControllerBase
+	public class MagazinesApiController : ControllerBase
 	{
 		private readonly IMagazineService _magazineService;
 		
 
 
-		public MagazinesController(IMagazineService magazineService)
+		public MagazinesApiController(IMagazineService magazineService)
 		{
 			_magazineService = magazineService;
 			
@@ -36,6 +36,7 @@ namespace EDergi.API.Controllers
 			var magazines = await _magazineService.GetAllAsync();
 			return Ok(magazines);
 		}
+
 
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetById(Guid id)

@@ -24,7 +24,22 @@ namespace EDergi.Persistence.Concretes
 			_writeRepository = writeRepository;
 			
 		}
+		public async Task<List<MagazineCreateDto>> GetAllAsync2()
+		{
+			var magazines = await _readRepository.GetAll()
+				.Select(m => new MagazineCreateDto
+				{
+					Id = m.Id,
+					Title = m.Title ?? string.Empty,
+					Description = m.Description ?? string.Empty,
+					ImageUrl = m.ImageUrl ?? string.Empty,
+					ISSN = m.ISSN ?? string.Empty,
+					StartDate = m.StartDate
+				})
+				.ToListAsync();
 
+			return magazines ?? new List<MagazineCreateDto>();
+		}
 		public async Task<List<Magazine>> GetAllAsync()
 		{
 			var magazines = await _readRepository.GetAll()
@@ -165,5 +180,8 @@ namespace EDergi.Persistence.Concretes
 				await _writeRepository.RemoveAsync(magazine);
 			}
 		}
+
+		
+
 	}
 }

@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Dergiler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Dergiler</h1>
+    <div id="magazines-container">
+        <!-- Partial View buraya yüklenecek -->
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('/Magazines/GetMagazinesPartial', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/html',
+                }
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('magazines-container').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('AJAX hatası:', error);
+            });
+        });
+    </script>
+}
