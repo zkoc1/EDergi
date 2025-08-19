@@ -1,0 +1,58 @@
+﻿@model EDergi.Domain.Entitites.Magazine
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Sol: Kapak -->
+        <div class="col-md-4">
+            <div class="card shadow-sm rounded-3">
+                <img src="@Model.ImageUrl" alt="@Model.Title" class="card-img-top img-fluid" />
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary fw-bold">@Model.Title</h5>
+                    <span class="badge bg-secondary">ISSN: @Model.ISSN</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ: Bilgiler -->
+        <div class="col-md-8">
+            <div class="card shadow-sm rounded-3">
+                <div class="card-body">
+                    <h3 class="mb-3">@Model.Title</h3>
+                    <p class="text-muted">@Model.Description</p>
+
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item"><b>Başlangıç Tarihi:</b> @Model.StartDate.ToString("dd.MM.yyyy")</li>
+                        <li class="list-group-item"><b>Periyot:</b> @Model.Period</li>
+                        <li class="list-group-item"><b>Amaç:</b> @Model.Purpose</li>
+                        <li class="list-group-item"><b>Kapsam:</b> @Model.Scope</li>
+                    </ul>
+
+                    <!-- Makale Gönder -->
+                    <div class="mb-4">
+                        <h5>📑 Makale Gönder</h5>
+                        <a href="/MakaleGonder" class="btn btn-primary btn-sm mt-2">Buraya Tıklayın</a>
+                    </div>
+
+                    <!-- Amaç & Kapsam -->
+                    <div class="mb-4">
+                        <h5>🎯 Amaç ve Kapsam</h5>
+                        <p>@Model.Purpose</p>
+                        <p>@Model.Scope</p>
+                    </div>
+
+                    <!-- Yazım Kuralları -->
+                    <div class="mb-4">
+                        <h5>✍️ Yazım Kuralları</h5>
+                        <p>@Model.WritingRules</p>
+                    </div>
+
+                    <!-- Dergi Kuralları -->
+                    <div class="mb-4">
+                        <h5>📌 Dergi Kuralları</h5>
+                        <p>@Model.JournalRules</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

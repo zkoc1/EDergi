@@ -69,13 +69,15 @@
         border-radius: 0 0 12px 12px;
     }
 
-    /* FİLTRELEME BÖLÜMÜ */
+    /* SOL FİLTRE */
     .filter-section {
         background: #f8f9fa;
         padding: 20px;
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         margin-bottom: 20px;
+        position: sticky;
+        top: 90px;
     }
 
     .filter-title {
@@ -94,65 +96,89 @@
             font-size: 0.95rem;
             color: #555;
         }
+
+    /* Arama */
+    .search-area {
+        margin-bottom: 15px;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: .95rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,.05);
+    }
 </style>
 
 <div class="container mt-5">
     <h1 class="text-center mb-4">Dergiler</h1>
 
     <div class="row">
-        <!-- Filtreleme Bölümü -->
+        <!-- SOL: Filtreler -->
         <div class="col-md-3">
             <div class="filter-section">
                 <div class="filter-title">Filtrele</div>
+
+                <div class="search-area">
+                    <input id="q" class="search-input" type="text" placeholder="Başlık, açıklama veya ISSN ile ara..." />
+                </div>
+
+                <!-- Period checkbox'ları - string değerlerle -->
                 <div class="filter-item">
-                    <input type="checkbox" id="filter-0" name="filter" value="0">
-                    <label for="filter-0">Aylık</label>
+                    <input type="checkbox" id="p1" name="period" value="Aylık" />
+                    <label for="p1">Aylık</label>
                 </div>
                 <div class="filter-item">
-                    <input type="checkbox" id="filter-1" name="filter" value="1">
-                    <label for="filter-1">Yılda 1 Sayı</label>
+                    <input type="checkbox" id="p2" name="period" value="Yılda 1 Sayı" />
+                    <label for="p2">Yılda 1 Sayı</label>
                 </div>
                 <div class="filter-item">
-                    <input type="checkbox" id="filter-2" name="filter" value="2">
-                    <label for="filter-2">Yılda 2 Sayı</label>
+                    <input type="checkbox" id="p3" name="period" value="Yılda 2 Sayı" />
+                    <label for="p3">Yılda 2 Sayı</label>
                 </div>
                 <div class="filter-item">
-                    <input type="checkbox" id="filter-3" name="filter" value="3">
-                    <label for="filter-3">Yılda 3 Sayı</label>
+                    <input type="checkbox" id="p4" name="period" value="Yılda 3 Sayı" />
+                    <label for="p4">Yılda 3 Sayı</label>
                 </div>
                 <div class="filter-item">
-                    <input type="checkbox" id="filter-4" name="filter" value="4">
-                    <label for="filter-4">Yılda 4 Sayı</label>
+                    <input type="checkbox" id="p5" name="period" value="Yılda 4 Sayı" />
+                    <label for="p5">Yılda 4 Sayı</label>
                 </div>
                 <div class="filter-item">
-                    <input type="checkbox" id="filter-5" name="filter" value="5">
-                    <label for="filter-5">Yılda 5 Sayı</label>
+                    <input type="checkbox" id="p6" name="period" value="Yılda 5 Sayı" />
+                    <label for="p6">Yılda 5 Sayı</label>
                 </div>
                 <div class="filter-item">
-                    <input type="checkbox" id="filter-6" name="filter" value="6">
-                    <label for="filter-6">Yılda 6 Sayı</label>
+                    <input type="checkbox" id="p7" name="period" value="Yılda 6 Sayı" />
+                    <label for="p7">Yılda 6 Sayı</label>
                 </div>
                 <div class="filter-item">
-                    <input type="checkbox" id="filter-7" name="filter" value="7">
-                    <label for="filter-7">Yılda 7 Sayı</label>
+                    <input type="checkbox" id="p8" name="period" value="Yılda 7 Sayı" />
+                    <label for="p8">Yılda 7 Sayı</label>
                 </div>
                 <div class="filter-item">
-                    <input type="checkbox" id="filter-12" name="filter" value="12">
-                    <label for="filter-12">Yılda 12 Sayı</label>
+                    <input type="checkbox" id="p9" name="period" value="Yılda 12 Sayı" />
+                    <label for="p9">Yılda 12 Sayı</label>
                 </div>
+
+                <button id="btnClear" class="btn btn-outline-secondary btn-sm mt-2 w-100">Filtreleri Temizle</button>
             </div>
         </div>
 
-        <!-- Dergi Listesi -->
+        <!-- SAĞ: Liste -->
         <div class="col-md-9">
-            @if (Model == null || !Model.Any())
-            {
-                <div class="alert alert-warning text-center">Henüz hiç dergi bulunmamaktadır.</div>
-            }
-            else
-            {
-                <div class="row">
-                    @foreach (var magazine in Model)
+            <div id="magList" class="row">
+                @if (Model == null || !Model.Any())
+                {
+                    <div class="col-12">
+                        <div class="alert alert-warning text-center">Henüz hiç dergi bulunmamaktadır.</div>
+                    </div>
+                }
+                else
+                {
+                    foreach (var magazine in Model)
                     {
                         <div class="col-md-4 mb-4">
                             <div class="magazine-card">
@@ -168,7 +194,8 @@
                                 </div>
 
                                 <div class="magazine-meta">
-                                    <span>@magazine.Documents?.Count makale</span>
+                                    <span>@(magazine.Documents?.Count ?? 0) makale</span>
+                                    <span>@magazine.StartDate.Year</span>
                                 </div>
 
                                 <a href="/Magazines/Details/@magazine.Id" class="btn btn-primary btn-sm btn-details">
@@ -177,8 +204,103 @@
                             </div>
                         </div>
                     }
-                </div>
-            }
+                }
+            </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const listEl = document.getElementById('magList');
+            const qEl = document.getElementById('q');
+            const clearBtn = document.getElementById('btnClear');
+            const periodBoxes = Array.from(document.querySelectorAll("input[name='period']"));
+
+            function cardHtml(m) {
+                const id = m.id ?? m.Id;
+                const title = m.title ?? m.Title ?? '';
+                const imageUrl = m.imageUrl ?? m.ImageUrl ?? '';
+                const issn = m.issn ?? m.ISSN ?? '-';
+                const period = m.period ?? m.Period ?? '-';
+                const startDate = m.startDate ?? m.StartDate;
+                let yearText = '';
+                try { yearText = startDate ? new Date(startDate).getFullYear() : ''; } catch {}
+
+                return `
+                    <div class="col-md-4 mb-4">
+                        <div class="magazine-card">
+                            <img src="${imageUrl}" alt="${title}" class="magazine-cover" />
+                            <div class="p-3">
+                                <div class="magazine-title">${title}</div>
+                                <div class="badge-issn">ISSN: ${issn}</div>
+                                <div class="magazine-info">
+                                    Başlangıç Yılı: ${yearText || ''} <br />
+                                    Periyot: ${period}
+                                </div>
+                            </div>
+                            <div class="magazine-meta">
+                                <span>${(m.documents?.length ?? m.Documents?.length ?? 0)} makale</span>
+                                <span>${yearText || ''}</span>
+                            </div>
+                            <a href="/Magazines/Details/${id}" class="btn btn-primary btn-sm btn-details">
+                                Detaylar
+                            </a>
+                        </div>
+                    </div>`;
+            }
+
+            function render(items) {
+                if (!items || items.length === 0) {
+                    listEl.innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-info text-center">Kriterlere uygun dergi bulunamadı.</div>
+                        </div>`;
+                    return;
+                }
+                listEl.innerHTML = items.map(cardHtml).join('');
+            }
+
+            async function searchAndFilter() {
+                const q = (qEl.value || '').trim();
+
+                // seçilen period string'lerini topla
+                const selectedPeriods = periodBoxes
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+
+                // querystring'i hazırla (periods çoklu gönderim)
+                const params = new URLSearchParams();
+                if (q) params.set('q', q);
+                selectedPeriods.forEach(p => params.append('periods', p));
+
+                const url = `/Magazines/Search_?${params.toString()}`;
+
+                try {
+                    const resp = await fetch(url, { headers: { 'Accept': 'application/json' }});
+                    if (!resp.ok) throw new Error('İstek başarısız');
+                    const data = await resp.json();
+                    render(data);
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+
+            // Eventler
+            periodBoxes.forEach(cb => cb.addEventListener('change', searchAndFilter));
+
+            let t = null;
+            qEl.addEventListener('input', () => {
+                clearTimeout(t);
+                t = setTimeout(searchAndFilter, 300);
+            });
+
+            clearBtn.addEventListener('click', () => {
+                qEl.value = '';
+                periodBoxes.forEach(cb => cb.checked = false);
+                searchAndFilter();
+            });
+        })();
+    </script>
+}
