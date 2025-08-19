@@ -1,31 +1,232 @@
-﻿@model EDergi.Application.ViewComponentModel.MagazineViewComponentModel
+﻿@model List<EDergi.Application.DTOs.MagazineCreateDto>
 
-@if (Model.MagazineList == null || !Model.MagazineList.Any())
-{
-    <div class="alert alert-warning text-center">Henüz hiç dergi bulunmamaktadır.</div>
+@{
+    ViewData["Title"] = "Dergiler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-else
-{
-    <div class="row">
-        @foreach (var magazine in Model.MagazineList)
+
+<style>
+    .search-wrap {
+        margin-top: 30px;
+        margin-bottom: 20px;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 12px 48px 12px 16px;
+        border: 1px solid #ddd;
+        border-radius: 26px;
+        font-size: 0.95rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .search-btn {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: #b0173c;
+        color: #fff;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .search-area {
+        position: relative;
+    }
+
+    .badge-issn {
+        display: inline-block;
+        padding: 4px 10px;
+        background: #eef3ff;
+        color: #0d6efd;
+        border-radius: 8px;
+        font-size: .82rem;
+    }
+
+    .mag-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,.08);
+        overflow: hidden;
+        transition: .3s;
+        text-align: center;
+    }
+
+        .mag-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0,0,0,.14);
+        }
+
+    .mag-cover {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-bottom: 1px solid #eee;
+    }
+
+    .mag-title {
+        color: #0d6efd;
+        font-weight: 600;
+        font-size: 1rem;
+        margin: 12px 0;
+        min-height: 40px;
+    }
+
+    .mag-info {
+        font-size: .86rem;
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .mag-footer {
+        display: flex;
+        justify-content: space-between;
+        font-size: .82rem;
+        padding: 8px 12px;
+        background: #fafafa;
+        border-top: 1px solid #f1f1f1;
+    }
+
+    .btn-details {
+        display: block;
+        width: 100%;
+        border-radius: 0 0 12px 12px;
+    }
+</style>
+
+<div class="container mt-4">
+    <!-- 🔍 ARAMA -->
+    <div class="search-wrap">
+        <div class="search-area">
+            <input id="q" class="search-input" type="text" placeholder="Başlık, açıklama veya ISSN ile ara...">
+            <button id="btnSearch" class="search-btn" title="Ara">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+        <div class="mt-2" style="color:#7a7a7a; font-size:.9rem;">
+            Başlık, açıklama, ISSN ve daha fazlası ile ara
+        </div>
+    </div>
+
+    <h1 class="text-center mb-4">Dergiler</h1>
+
+    <div class="row" id="magazineList">
+        @if (Model == null || !Model.Any())
         {
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <img src="@magazine.ImageUrl" class="card-img-top" alt="@magazine.Title" style="height: 200px; object-fit: cover;">
-                    <div class="card-body">
-                        <h5 class="card-title">@magazine.Title</h5>
-                        <p class="card-text">@magazine.Description</p>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><strong>ISSN:</strong> @magazine.ISSN</li>
-                            <li class="list-group-item"><strong>Başlangıç Tarihi:</strong> @magazine.StartDate.ToShortDateString()</li>
-                        </ul>
-                    </div>
-                    <div class="card-footer bg-transparent">
-                        <a href="@Url.Action("Details", "Magazines", new { id = magazine.Id })"
-                           class="btn btn-primary btn-sm w-100">Detaylar</a>
-                    </div>
-                </div>
+            <div class="col-12">
+                <div class="alert alert-warning text-center">Henüz hiç dergi bulunmamaktadır.</div>
             </div>
         }
+        else
+        {
+            @foreach (var m in Model)
+            {
+                <div class="col-md-3 mb-4">
+                    <div class="mag-card">
+                        <img class="mag-cover" src="@m.ImageUrl" alt="@m.Title" />
+                        <div class="p-3">
+                            <div class="mag-title">@m.Title</div>
+                            <div class="badge-issn">ISSN: @m.ISSN</div>
+                            <div class="mag-info">
+                                Başlangıç: @m.StartDate.ToString("dd.MM.yyyy")<br />
+                                Periyot: @m.Period
+                            </div>
+                        </div>
+                        <div class="mag-footer">
+                            <span>ISSN: @m.ISSN</span>
+                            <span>@m.StartDate.Year</span>
+                        </div>
+                        <a href="@Url.Action("Details", "Magazines", new { id = m.Id })" class="btn btn-primary btn-sm btn-details">Detaylar</a>
+                    </div>
+                </div>
+            }
+        }
     </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function(){
+            const input = document.getElementById('q');
+            const btn = document.getElementById('btnSearch');
+            const list = document.getElementById('magazineList');
+
+            function formatDateTR(iso){
+                if(!iso) return '';
+                const d = new Date(iso);
+                if(isNaN(d)) return '';
+                return d.toLocaleDateString('tr-TR');
+            }
+
+            function cardHtml(m){
+                // Not: API camelCase dönecekse m.title/m.imageUrl; PascalCase dönerse m.Title/m.ImageUrl.
+                const title = m.title ?? m.Title;
+                const imageUrl = m.imageUrl ?? m.ImageUrl;
+                const issn = m.issn ?? m.ISSN;
+                const period = m.period ?? m.Period;
+                const id = m.id ?? m.Id;
+                const startDate = m.startDate ?? m.StartDate;
+
+                const startText = startDate ? formatDateTR(startDate) : '';
+
+                return `
+                <div class="col-md-3 mb-4">
+                    <div class="mag-card">
+                        <img class="mag-cover" src="${imageUrl || ''}" alt="${title || ''}" />
+                        <div class="p-3">
+                            <div class="mag-title">${title || ''}</div>
+                            <div class="badge-issn">ISSN: ${issn || '-'}</div>
+                            <div class="mag-info">
+                                Başlangıç: ${startText}<br/>
+                                Periyot: ${period || '-'}
+                            </div>
+                        </div>
+                        <div class="mag-footer">
+                            <span>ISSN: ${issn || '-'}</span>
+                            <span>${startText ? (new Date(startDate)).getFullYear() : ''}</span>
+                        </div>
+                        <a href="/Magazines/Details/${id}" class="btn btn-primary btn-sm btn-details">Detaylar</a>
+                    </div>
+                </div>`;
+            }
+
+            function render(items){
+                if(!items || items.length === 0){
+                    list.innerHTML = `<div class="col-12">
+                        <div class="alert alert-info text-center">Arama sonucu bulunamadı.</div>
+                    </div>`;
+                    return;
+                }
+                list.innerHTML = items.map(cardHtml).join('');
+            }
+
+            async function search(){
+                const q = input.value.trim();
+                const resp = await fetch(`/Magazines/Search?q=${encodeURIComponent(q)}`, { method: 'GET' });
+                if(!resp.ok){ console.error('Search failed'); return; }
+                const data = await resp.json();
+                render(data);
+            }
+
+            // Enter + buton ile ara
+            btn.addEventListener('click', search);
+            input.addEventListener('keydown', (e)=>{
+                if(e.key === 'Enter'){ e.preventDefault(); search(); }
+            });
+
+            // Debounce ile yazarken ara (opsiyonel, hızlı his)
+            let t=null;
+            input.addEventListener('input', ()=>{
+                clearTimeout(t);
+                t = setTimeout(search, 350);
+            });
+        })();
+    </script>
 }

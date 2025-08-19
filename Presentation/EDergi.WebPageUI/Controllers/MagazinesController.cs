@@ -45,5 +45,12 @@ namespace EDergi.Web.Controllers
 
 			return View(dto);
 		}
+		[HttpGet]
+		public async Task<IActionResult> Search([FromQuery] string q)
+		{
+			var results = await _magazineService.SearchAsync(q);
+			return Ok(results); // JSON
+		}
+
 	}
 }

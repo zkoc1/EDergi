@@ -185,5 +185,37 @@ namespace EDergi.Persistence.Concretes
 
 			return magazines;
 		}
+		public async Task<List<MagazineCreateDto>> SearchAsync(string query)
+		{
+			// Boş veya sadece boşluk ise tümünü döndür
+			if (string.IsNullOrWhiteSpace(query))
+				return await GetAllAsync2();
+
+			query = query.Trim();
+
+			var q = _readRepository.GetAll();
+
+			// Title, Description, ISSN içinde LIKE ile arama
+			var filtered = q
+				.Where(m =>
+					EF.Functions.Like(m.Title ?? "", $"%{query}%") ||
+					EF.Functions.Like(m.Description ?? "", $"%{query}%") ||
+					EF.Functions.Like(m.ISSN ?? "", $"%{query}%")
+				)
+				.Select(m => new MagazineCreateDto
+				{
+					Id = m.Id,
+					Title = m.Title ?? string.Empty,
+					Description = m.Description ?? string.Empty,
+					ImageUrl = m.ImageUrl ?? string.Empty,
+					ISSN = m.ISSN ?? string.Empty,
+					StartDate = m.StartDate,
+					Period = m.Period
+				});
+
+			return await filtered.ToListAsync();
+		}
+
+
 	}
 }

@@ -15,12 +15,8 @@ namespace EDergi.WebPageUI.Views.Shared.ViewComponents
 
 		public async Task<IViewComponentResult> InvokeAsync()
 		{
-			var magazines = await _magazineService.GetAllAsync();
-			var model = new MagazineViewComponentModel
-			{
-				MagazineList = magazines
-			};
-			return View(model);
+			var magazines = await _magazineService.GetAllAsync2();
+			return View(magazines); // ✅ artık List<MagazineCreateDto> döndürüyor
 		}
 	}
 }

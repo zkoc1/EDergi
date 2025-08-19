@@ -17,6 +17,7 @@ namespace EDergi.Application.Abstractions
 		Task UpdateAsync(Magazine magazine);
 		Task DeleteAsync(Guid id);
 		Task<List<Magazine>> ViewComponentList();
+		Task<List<MagazineCreateDto>> SearchAsync(string query);
 
 
 	}

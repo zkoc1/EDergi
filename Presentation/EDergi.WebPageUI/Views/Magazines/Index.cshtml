@@ -68,44 +68,117 @@
         padding: 8px;
         border-radius: 0 0 12px 12px;
     }
+
+    /* FİLTRELEME BÖLÜMÜ */
+    .filter-section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+
+    .filter-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .filter-item {
+        margin-bottom: 10px;
+    }
+
+        .filter-item label {
+            margin-left: 8px;
+            font-size: 0.95rem;
+            color: #555;
+        }
 </style>
 
 <div class="container mt-5">
     <h1 class="text-center mb-4">Dergiler</h1>
 
-    @if (Model == null || !Model.Any())
-    {
-        <div class="alert alert-warning text-center">Henüz hiç dergi bulunmamaktadır.</div>
-    }
-    else
-    {
-        <div class="row">
-            @foreach (var magazine in Model)
-            {
-                <div class="col-md-3 mb-4">
-                    <div class="magazine-card">
-                        <img src="@magazine.ImageUrl" alt="@magazine.Title" class="magazine-cover" />
+    <div class="row">
+        <!-- Filtreleme Bölümü -->
+        <div class="col-md-3">
+            <div class="filter-section">
+                <div class="filter-title">Filtrele</div>
+                <div class="filter-item">
+                    <input type="checkbox" id="filter-0" name="filter" value="0">
+                    <label for="filter-0">Aylık</label>
+                </div>
+                <div class="filter-item">
+                    <input type="checkbox" id="filter-1" name="filter" value="1">
+                    <label for="filter-1">Yılda 1 Sayı</label>
+                </div>
+                <div class="filter-item">
+                    <input type="checkbox" id="filter-2" name="filter" value="2">
+                    <label for="filter-2">Yılda 2 Sayı</label>
+                </div>
+                <div class="filter-item">
+                    <input type="checkbox" id="filter-3" name="filter" value="3">
+                    <label for="filter-3">Yılda 3 Sayı</label>
+                </div>
+                <div class="filter-item">
+                    <input type="checkbox" id="filter-4" name="filter" value="4">
+                    <label for="filter-4">Yılda 4 Sayı</label>
+                </div>
+                <div class="filter-item">
+                    <input type="checkbox" id="filter-5" name="filter" value="5">
+                    <label for="filter-5">Yılda 5 Sayı</label>
+                </div>
+                <div class="filter-item">
+                    <input type="checkbox" id="filter-6" name="filter" value="6">
+                    <label for="filter-6">Yılda 6 Sayı</label>
+                </div>
+                <div class="filter-item">
+                    <input type="checkbox" id="filter-7" name="filter" value="7">
+                    <label for="filter-7">Yılda 7 Sayı</label>
+                </div>
+                <div class="filter-item">
+                    <input type="checkbox" id="filter-12" name="filter" value="12">
+                    <label for="filter-12">Yılda 12 Sayı</label>
+                </div>
+            </div>
+        </div>
 
-                        <div class="p-3">
-                            <div class="magazine-title">@magazine.Title</div>
-                            <div class="badge-issn">ISSN: @magazine.ISSN</div>
-                            <div class="magazine-info">
-                                Başlangıç Yılı: @magazine.StartDate.Year <br />
-                                Periyot: @magazine.Period
+        <!-- Dergi Listesi -->
+        <div class="col-md-9">
+            @if (Model == null || !Model.Any())
+            {
+                <div class="alert alert-warning text-center">Henüz hiç dergi bulunmamaktadır.</div>
+            }
+            else
+            {
+                <div class="row">
+                    @foreach (var magazine in Model)
+                    {
+                        <div class="col-md-4 mb-4">
+                            <div class="magazine-card">
+                                <img src="@magazine.ImageUrl" alt="@magazine.Title" class="magazine-cover" />
+
+                                <div class="p-3">
+                                    <div class="magazine-title">@magazine.Title</div>
+                                    <div class="badge-issn">ISSN: @magazine.ISSN</div>
+                                    <div class="magazine-info">
+                                        Başlangıç Yılı: @magazine.StartDate.Year <br />
+                                        Periyot: @magazine.Period
+                                    </div>
+                                </div>
+
+                                <div class="magazine-meta">
+                                    <span>@magazine.Documents?.Count makale</span>
+                                </div>
+
+                                <a href="/Magazines/Details/@magazine.Id" class="btn btn-primary btn-sm btn-details">
+                                    Detaylar
+                                </a>
                             </div>
                         </div>
-
-                        <div class="magazine-meta">
-                            <span>@magazine.Documents?.Count makale</span>
-                           
-                        </div>
-
-                        <a href="/Magazines/Details/@magazine.Id" class="btn btn-primary btn-sm btn-details">
-                            Detaylar
-                        </a>
-                    </div>
+                    }
                 </div>
             }
         </div>
-    }
+    </div>
 </div>

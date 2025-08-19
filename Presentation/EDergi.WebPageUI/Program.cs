@@ -46,6 +46,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
 	options.SlidingExpiration = true;
 });
+builder.Services.AddControllers()
+	.AddJsonOptions(o => o.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase);
 
 // Authorization politikaları
 builder.Services.AddAuthorization(options =>
