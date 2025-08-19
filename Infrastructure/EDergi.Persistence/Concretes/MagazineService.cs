@@ -2,6 +2,7 @@
 using EDergi.Application.DTOs;
 using EDergi.Application.Interfaces.Services;
 using EDergi.Application.Repostories;
+using EDergi.Application.ViewComponentModel;
 using EDergi.Domain.Entitites;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +35,8 @@ namespace EDergi.Persistence.Concretes
 					Description = m.Description ?? string.Empty,
 					ImageUrl = m.ImageUrl ?? string.Empty,
 					ISSN = m.ISSN ?? string.Empty,
-					StartDate = m.StartDate
+					StartDate = m.StartDate,
+					Period = m.Period
 				})
 				.ToListAsync();
 
@@ -64,8 +66,6 @@ namespace EDergi.Persistence.Concretes
 
 			return magazines;
 		}
-
-
 
 		public async Task<Magazine> GetByIdAsync(Guid id)
 		{
@@ -165,8 +165,6 @@ namespace EDergi.Persistence.Concretes
 			return true;
 		}
 
-
-
 		public async Task UpdateAsync(Magazine magazine)
 		{
 			await _writeRepository.UpdateAsync(magazine);
@@ -181,7 +179,11 @@ namespace EDergi.Persistence.Concretes
 			}
 		}
 
-		
+		public async Task<List<Magazine>> ViewComponentList()
+		{
+			var magazines = _readRepository.GetAll().ToList();
 
+			return magazines;
+		}
 	}
 }

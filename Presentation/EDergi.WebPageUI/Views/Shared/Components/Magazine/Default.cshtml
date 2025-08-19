@@ -1,13 +1,13 @@
-﻿@model List<EDergi.Application.DTOs.MagazineCreateDto>
+﻿@model EDergi.Application.ViewComponentModel.MagazineViewComponentModel
 
-@if (Model == null || !Model.Any())
+@if (Model.MagazineList == null || !Model.MagazineList.Any())
 {
     <div class="alert alert-warning text-center">Henüz hiç dergi bulunmamaktadır.</div>
 }
 else
 {
     <div class="row">
-        @foreach (var magazine in Model)
+        @foreach (var magazine in Model.MagazineList)
         {
             <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow-sm">

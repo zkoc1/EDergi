@@ -68,8 +68,9 @@
                                     <nav id="mobile-menu">
                                         <ul>
                                             <li>
-                                                <a href="Home/Index.cshtml">Home</a>
+                                                <a asp-controller="Home" asp-action="Index">Home</a>
                                             </li>
+
                                             <li>
                                                 <a href="Hakkında.html">
                                                     Hakkında
@@ -82,11 +83,11 @@
                                                 </ul>
                                             </li>
                                             <li>
-                                                <a href="dergiler.html">Dergiler</a>
+                                                <a asp-controller="Magazines" asp-action="Index">Dergiler</a>
                                             </li>
                                            
                                             <li>
-                                                <a href="araştırmacılar.html">Araştırmacılar</a>
+                                                <a asp-controller="Researchers" asp-action="Index">Araştırmacılar</a>
                                             </li>
                                         </ul>
                                     </nav>
@@ -164,8 +165,9 @@
                                     <nav id="mobile-menu">
                                         <ul>
                                             <li>
-                                                <a href="Home/Index.cshtml">Home</a>
+                                                <a asp-controller="Home" asp-action="Index">Home</a>
                                             </li>
+
                                             <li>
                                                 <a href="Hakkında.html">
                                                     Hakkında
@@ -176,14 +178,12 @@
                                                     <li><a href="trendler.html">Trendler</a></li>
                                                     <li><a href="konular.html">Konular</a></li>
                                                 </ul>
-                                            </li> 
-                                                <a href="dergiler.html">Dergiler</a>
                                             </li>
                                             <li>
-
+                                                <a asp-controller="Magazines" asp-action="Index">Dergiler</a>
                                             </li>
                                             <li>
-                                                <a href="araştırmacılar.html">Araştırmacılar</a>
+                                                <a asp-controller="Researchers" asp-action="Index">Araştırmacılar</a>
                                             </li>
                                         </ul>
                                     </nav>

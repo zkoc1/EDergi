@@ -1,0 +1,35 @@
+﻿@model List<EDergi.Domain.Entitites.Author>
+
+
+@{
+    ViewData["Title"] = "Araştırmacılar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Araştırmacılar</h1>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-warning text-center">Henüz hiç araştırmacı bulunmamaktadır.</div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var author in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">@author.Name</h5>
+                            <p class="card-text">
+                                <strong>Email:</strong> @author.Email<br>
+                                <strong>Kurum:</strong> @author.Affiliation
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

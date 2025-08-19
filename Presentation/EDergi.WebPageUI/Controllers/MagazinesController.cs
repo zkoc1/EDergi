@@ -24,17 +24,18 @@ namespace EDergi.Web.Controllers
 			return View(dtoList);
 		}
 
+
 		// Partial View için veri gönderme
-		public async Task<IActionResult> GetMagazinesPartial()
-		{
-			var dtoList = await _magazineService.GetAllAsync2();
-			if (dtoList == null || !dtoList.Any())
-			{
-				// Eğer dergi listesi boşsa, boş bir liste gönder
-				dtoList = new List<MagazineCreateDto>();
-			}
-			return PartialView("~/Views/Shared/_MagazinesPartial.cshtml", dtoList);
-		}
+		//public async Task<IActionResult> GetMagazinesPartial()
+		//{
+		//	var dtoList = await _magazineService.GetAllAsync2();
+		//	if (dtoList == null || !dtoList.Any())
+		//	{
+		//		// Eğer dergi listesi boşsa, boş bir liste gönder
+		//		dtoList = new List<MagazineCreateDto>();
+		//	}
+		//	return PartialView("~/Views/Shared/.cshtml", dtoList);
+		//}
 
 		// Detay sayfası
 		public async Task<IActionResult> Details(Guid id)

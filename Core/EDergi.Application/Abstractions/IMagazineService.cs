@@ -1,4 +1,5 @@
 ﻿using EDergi.Application.DTOs;
+using EDergi.Application.ViewComponentModel;
 using EDergi.Domain.Entitites;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -13,10 +14,10 @@ namespace EDergi.Application.Abstractions
 		Task<List<MagazineCreateDto>> GetAllAsync2();
 		Task<Magazine> GetByIdAsync(Guid id);
 		Task<bool> CreateAsync(MagazineCreateDto dto);
-
 		Task UpdateAsync(Magazine magazine);
 		Task DeleteAsync(Guid id);
-	
+		Task<List<Magazine>> ViewComponentList();
+
 
 	}
 }

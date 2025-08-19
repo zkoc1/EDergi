@@ -1,0 +1,22 @@
+﻿.card {
+    max-width: 300px;
+    border-radius: 10px !important;
+    margin-bottom: 20px;
+}
+
+.card-img-top {
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
