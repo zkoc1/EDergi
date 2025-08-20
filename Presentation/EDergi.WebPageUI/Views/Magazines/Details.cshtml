@@ -135,14 +135,17 @@
                                                                     .Take(5))
                                     {
                                         <li>
-                                            <a href="/Volume/@volume.Id">
+                                            <a asp-controller="Magazines" asp-action="Volume" asp-route-id="@volume.Id" asp-route-magazineId="@Model.Id">
                                                 @volume.Year - Cilt @volume.Title
-                                                (Sayı: @(volume.Issues?.Count ?? 0))
                                             </a>
+
                                         </li>
                                     }
                                 </ul>
-                                <a href="/TumSayilar" class="btn btn-sm btn-outline-primary mt-2">Tüm Sayılar</a>
+                                <a asp-controller="Magazines" asp-action="TumSayilar" asp-route-magazineId="@Model.Id" class="btn btn-sm btn-outline-primary mt-2">
+                                    Tüm Sayılar
+                                </a>
+
                             }
                             else
                             {
@@ -151,6 +154,7 @@
                         </div>
                     </div>
                 </div>
+
 
             </div>
         </div>

@@ -87,17 +87,30 @@ namespace EDergi.Web.Controllers
 
 			return Json(list); // JSON
 		}
-		// Details
-		//public async Task<IActionResult> Details(Guid id)
-		//{
-		//	var dto = await _magazineService.GetByIdAsync(id);
+		// Belirli bir Volume detay (makaleler dahil) 
+		public async Task<IActionResult> Volume(Guid id, Guid magazineId)
+		{
+			var dto = await _magazineService.GetByIdAsync2(magazineId);
+			if (dto == null) return NotFound();
 
-		//	if (dto == null)
-		//		return NotFound();
+			var volume = dto.Volumes.FirstOrDefault(v => v.Id == id);
+			if (volume == null) return NotFound();
 
-		//	// burada dto.Volumes ve dto.Issues dolu olmalı
-		//	return View(dto);
-		//}
+			return View(volume); // DTO gönder
+		}
+
+		// Tüm sayılar
+		public async Task<IActionResult> TumSayilar(Guid magazineId)
+		{
+			var dto = await _magazineService.GetByIdAsync2(magazineId);
+			if (dto == null) return NotFound();
+
+			// HashSet -> List
+			var volumes = dto.Volumes?.ToList(); new List<VolumeCreateDto>();
+
+			return View(volumes);
+		}
+
 
 
 	}

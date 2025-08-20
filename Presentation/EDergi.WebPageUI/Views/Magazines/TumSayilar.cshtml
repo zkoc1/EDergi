@@ -1,0 +1,38 @@
+﻿@model List<EDergi.Domain.Entitites.Volume>
+
+<div class="container mt-4">
+    <h3>Tüm Sayılar</h3>
+
+    @if (Model?.Any() == true)
+    {
+        @foreach (var volume in Model.OrderByDescending(v => v.Year))
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5>@volume.Year - Cilt @volume.Title</h5>
+
+                    @if (volume.Issues?.Any() == true)
+                    {
+                        <ul>
+                            @foreach (var issue in volume.Issues)
+                            {
+                                <li>
+                                    Sayı @issue.IssueNumber
+                                    - @issue.PublishDate.ToString("dd.MM.yyyy")
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Bu cilde ait sayı yok.</p>
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>Henüz yayınlanmış sayı bulunmamaktadır.</p>
+    }
+</div>
