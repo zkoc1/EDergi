@@ -13,6 +13,7 @@ namespace EDergi.Application.Abstractions
 		Task<List<Magazine>> GetAllAsync();
 		Task<List<MagazineCreateDto>> GetAllAsync2();
 		Task<Magazine> GetByIdAsync(Guid id);
+		Task<Magazine> GetByIdAsync2(Guid id);
 		Task<bool> CreateAsync(MagazineCreateDto dto);
 		Task UpdateAsync(Magazine magazine);
 		Task DeleteAsync(Guid id);

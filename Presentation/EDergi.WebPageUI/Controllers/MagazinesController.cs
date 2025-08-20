@@ -40,7 +40,7 @@ namespace EDergi.Web.Controllers
 		// Detay sayfası
 		public async Task<IActionResult> Details(Guid id)
 		{
-			var dto = await _magazineService.GetByIdAsync(id);
+			var dto = await _magazineService.GetByIdAsync2(id);
 			if (dto == null) return NotFound();
 
 			return View(dto);
@@ -87,6 +87,18 @@ namespace EDergi.Web.Controllers
 
 			return Json(list); // JSON
 		}
+		// Details
+		//public async Task<IActionResult> Details(Guid id)
+		//{
+		//	var dto = await _magazineService.GetByIdAsync(id);
+
+		//	if (dto == null)
+		//		return NotFound();
+
+		//	// burada dto.Volumes ve dto.Issues dolu olmalı
+		//	return View(dto);
+		//}
+
 
 	}
 }

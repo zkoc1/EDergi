@@ -25,23 +25,38 @@ namespace EDergi.Persistence.Concretes
 			_writeRepository = writeRepository;
 			
 		}
-		public async Task<List<MagazineCreateDto>> GetAllAsync2()
-		{
-			var magazines = await _readRepository.GetAll()
-				.Select(m => new MagazineCreateDto
-				{
-					Id = m.Id,
-					Title = m.Title ?? string.Empty,
-					Description = m.Description ?? string.Empty,
-					ImageUrl = m.ImageUrl ?? string.Empty,
-					ISSN = m.ISSN ?? string.Empty,
-					StartDate = m.StartDate,
-					Period = m.Period
-				})
-				.ToListAsync();
+	public async Task<List<MagazineCreateDto>> GetAllAsync2()
+{
+    var magazines = await _readRepository.GetAll()
+        .Include(m => m.Volumes)
+            .ThenInclude(v => v.Issues)
+        .Select(m => new MagazineCreateDto
+        {
+            Id = m.Id,
+            Title = m.Title ?? string.Empty,
+            Description = m.Description ?? string.Empty,
+            ImageUrl = m.ImageUrl ?? string.Empty,
+            ISSN = m.ISSN ?? string.Empty,
+            StartDate = m.StartDate,
+            Period = m.Period,
+            Volumes = m.Volumes.Select(v => new VolumeCreateDto
+            {
+                Id = v.Id,
+                Title = v.Title,
+                Year = v.Year,
+                Issues = v.Issues.Select(i => new IssueCreateDto
+                {
+                    Id = i.Id,
+                    IssueNumber = i.IssueNumber,
+                    PublishDate = i.PublishDate
+                }).ToList()
+            }).ToList()
+        })
+        .ToListAsync();
 
-			return magazines ?? new List<MagazineCreateDto>();
-		}
+    return magazines ?? new List<MagazineCreateDto>();
+}
+
 		public async Task<List<Magazine>> GetAllAsync()
 		{
 			var magazines = await _readRepository.GetAll()
@@ -65,6 +80,14 @@ namespace EDergi.Persistence.Concretes
 				.ToListAsync();
 
 			return magazines;
+		}
+		public async Task<Magazine> GetByIdAsync2(Guid id)
+		{
+			return await _readRepository.GetAll()
+				.Include(m => m.Volumes) // Volumes ilişkisini yükle
+					.ThenInclude(v => v.Issues) // Issues ilişkisini yükle
+				.AsNoTracking() // İzleme yapma
+				.FirstOrDefaultAsync(m => m.Id == id); // Belirli ID'ye göre filtrele
 		}
 
 		public async Task<Magazine> GetByIdAsync(Guid id)

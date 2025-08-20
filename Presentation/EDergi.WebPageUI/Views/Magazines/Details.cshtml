@@ -11,17 +11,17 @@
                     <h3 class="text-primary">@Model.Title</h3>
                     <span class="badge bg-secondary">ISSN: @Model.ISSN</span>
 
-                    <!-- Takipçi ve Görüntülenme İstatistikleri -->
+                    @* <!-- Takipçi ve Görüntülenme İstatistikleri -->
                     <div class="d-flex justify-content-center gap-3 mt-3">
                         <div class="text-center">
-                            <div class="fw-bold">@(Model.ViewStats?.FavoriteCount ?? 0)</div>
+                            <div class="fw-bold">@(Model.ViewStats?.FavoriteCount ?? 5)</div>
                             <small>Takipçi</small>
                         </div>
                         <div class="text-center">
-                            <div class="fw-bold">@(Model.ViewStats?.ViewCount ?? 0)</div>
+                            <div class="fw-bold">@(Model.ViewStats?.ViewCount ?? 6)</div>
                             <small>Görüntülenme</small>
                         </div>
-                    </div>
+                    </div> *@
                 </div>
             </div>
         </div>
@@ -38,7 +38,6 @@
                                 <li><b>Başlangıç:</b> @Model.StartDate.ToString("MMMM yyyy")</li>
                                 <li><b>Periyot:</b> @Model.Period</li>
                                 <li><b>Dil:</b> Türkçe</li>
-                                <li><b>Dökümanlar:</b> @string.Join(", ", Model.Documents?.Select(i => i.FileName) ?? new List<string>())</li>
                             </ul>
                             <a href="/MakaleGonder" class="btn btn-primary">Makale Gönder</a>
                         </div>
@@ -50,13 +49,75 @@
                     <div class="card shadow-sm h-100">
                         <div class="card-body">
                             <h5 class="text-primary">Hakkında</h5>
-                            <p>@Model.Description</p> <!-- MagazineCreateDto'daki Description -->
+                            <p>@Model.Description</p>
 
                             <div class="mt-3">
-                                <a href="/AmaçVeKapsam" class="d-block py-1">Amaç ve Kapsam</a>
-                                <a href="/YazımKuralları" class="d-block py-1">Yazım Kuralları</a>
-                                <a href="/Etikİlkeler" class="d-block py-1">Etik İlkeler</a>
-                                <a href="/DergiKurulları" class="d-block py-1">Dergi Kurulları</a>
+                                <!-- Butonlar -->
+                                <a href="#" class="d-block py-1" data-bs-toggle="modal" data-bs-target="#purposeModal">Amaç ve Kapsam</a>
+                                <a href="#" class="d-block py-1" data-bs-toggle="modal" data-bs-target="#writingModal">Yazım Kuralları</a>
+                                <a href="#" class="d-block py-1" data-bs-toggle="modal" data-bs-target="#ethicsModal">Etik İlkeler</a>
+                                <a href="#" class="d-block py-1" data-bs-toggle="modal" data-bs-target="#rulesModal">Dergi Kurulları</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Amaç ve Kapsam Modal -->
+                <div class="modal fade" id="purposeModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Amaç ve Kapsam</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>@Model.Purpose</p>
+                                <p>@Model.Scope</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Yazım Kuralları Modal -->
+                <div class="modal fade" id="writingModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Yazım Kuralları</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>@Model.WritingRules</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etik İlkeler Modal -->
+                <div class="modal fade" id="ethicsModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Etik İlkeler</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>@Model.JournalRules</p> <!-- Eğer Etik ayrı alan varsa DTO'ya eklenebilir -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dergi Kurulları Modal -->
+                <div class="modal fade" id="rulesModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Dergi Kurulları</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>@Model.JournalRules</p>
                             </div>
                         </div>
                     </div>
@@ -69,10 +130,15 @@
                             @if (Model.Volumes?.Any() == true)
                             {
                                 <ul class="list-unstyled">
-                                    @foreach (var volume in Model.Volumes.OrderByDescending(v => v.Year).Take(5))
+                                    @foreach (var volume in Model.Volumes
+                                                                    .OrderByDescending(v => v.Year)
+                                                                    .Take(5))
                                     {
                                         <li>
-                                            <a href="/Volume/@volume.Id">@volume.Year - Cilt @volume.Title Sayı @volume.Issues?.Count</a>
+                                            <a href="/Volume/@volume.Id">
+                                                @volume.Year - Cilt @volume.Title
+                                                (Sayı: @(volume.Issues?.Count ?? 0))
+                                            </a>
                                         </li>
                                     }
                                 </ul>
@@ -85,6 +151,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
