@@ -98,5 +98,10 @@ namespace EDergi.Persistence.Services
 			await _writeRepository.RemoveAsync(entity);
 			return true;
 		}
+		public async Task<List<Volume>> GetVolumesByMagazineIdAsync(Guid magazineId)
+		{
+			return await _readRepository.GetWhereAsync(v => v.MagazineId == magazineId);
+		}
+
 	}
 }

@@ -21,7 +21,7 @@ namespace EDergi.Persistence.Concretes
 
 		public Task<List<Author>> GetAllAsync()
 		{
-			var list = _readRepository.GetAll().ToList();
+			var list = _readRepository.GetAll()?.ToList() ?? new List<Author>();
 			return Task.FromResult(list);
 		}
 

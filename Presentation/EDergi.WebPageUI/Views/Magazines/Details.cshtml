@@ -39,7 +39,10 @@
                                 <li><b>Periyot:</b> @Model.Period</li>
                                 <li><b>Dil:</b> Türkçe</li>
                             </ul>
-                            <a href="/MakaleGonder" class="btn btn-primary">Makale Gönder</a>
+                            <a asp-controller="Articles" asp-action="Create" asp-route-magazineId="@Model.Id" class="btn btn-primary">
+                                Makale Gönder
+                            </a>
+
                         </div>
                     </div>
                 </div>
@@ -135,7 +138,7 @@
                                                                     .Take(5))
                                     {
                                         <li>
-                                            <a asp-controller="Magazines" asp-action="Volume" asp-route-id="@volume.Id" asp-route-magazineId="@Model.Id">
+                                            <a asp-controller="Volumes" asp-action="Details" asp-route-id="@volume.Id" asp-route-magazineId="@Model.Id">
                                                 @volume.Year - Cilt @volume.Title
                                             </a>
 

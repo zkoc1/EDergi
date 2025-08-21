@@ -1,5 +1,4 @@
-﻿// IssueService.cs
-using EDergi.Application.Abstractions;
+﻿using EDergi.Application.Abstractions;
 using EDergi.Application.Repostories;
 using EDergi.Domain.Entitites;
 using EDergi.Application.DTOs;
@@ -40,7 +39,7 @@ namespace EDergi.Persistence.Concretes
 				IssueNumber = dto.IssueNumber,
 				PublishDate = dto.PublishDate,
 				CreatedDate = DateTime.UtcNow,
-				VolumeId=dto.VolumeId,
+				VolumeId = dto.VolumeId,
 				Articles = dto.Articles?.Select(articleDto => new Article
 				{
 					Id = Guid.NewGuid(),
@@ -53,7 +52,7 @@ namespace EDergi.Persistence.Concretes
 					Reference = articleDto.Reference,
 					ArticleLink = articleDto.ArticleLink,
 					CreatedDate = DateTime.UtcNow,
-					IssueId = articleDto.IssueId,
+					IssueId = Guid.NewGuid(), // Geçici IssueId, sonra güncellenecek
 					IsApproved = articleDto.IsApproved,
 
 					// ArticleAuthor ilişkisi kuruluyor
@@ -61,22 +60,34 @@ namespace EDergi.Persistence.Concretes
 					{
 						AuthorId = authorId
 					}).ToList()
-
 				}).ToList()
 			};
 
+			// Issue'yu veritabanına ekle
 			await _writeRepository.AddAsync(issue);
+			await _writeRepository.SaveAsync(); // Değişiklikleri kaydet
+
+			// Article'ların IssueId'sini güncelle
+			foreach (var article in issue.Articles)
+			{
+				article.IssueId = issue.Id;
+			}
+
+			// Issue'yu güncelle
+			await _writeRepository.UpdateAsync(issue);
+			await _writeRepository.SaveAsync();
 		}
 
 		public async Task UpdateAsync(Issue issue)
 		{
 			await _writeRepository.UpdateAsync(issue);
+			await _writeRepository.SaveAsync();
 		}
+
 		public async Task<List<Issue>> GetByVolumeIdAsync(Guid volumeId)
 		{
 			return await _readRepository.GetWhereAsync(i => i.VolumeId == volumeId);
 		}
-
 
 		public async Task DeleteAsync(Guid id)
 		{
@@ -84,7 +95,15 @@ namespace EDergi.Persistence.Concretes
 			if (issue != null)
 			{
 				await _writeRepository.RemoveAsync(issue);
+				await _writeRepository.SaveAsync();
 			}
 		}
+		public async Task<List<Issue>> GetIssuesByVolumeIdAsync(Guid volumeId)
+		{
+			return await _readRepository.GetWhereAsync(i => i.VolumeId == volumeId);
+		}
+		
+
+
 	}
 }

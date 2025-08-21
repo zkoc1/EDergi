@@ -15,11 +15,19 @@
                     <div class="mt-2">
                         @if (issue.Articles?.Any() == true)
                         {
-                            <ul>
+                            <ul class="list-unstyled">
                                 @foreach (var article in issue.Articles)
-                                {
-                                    <li>@article.Title</li>
-                                }
+                                {if(@article.IsApproved){
+                                    <li class="mb-3">
+                                        <h5>@article.Title</h5>
+                                        <p><strong>Proje Numarası:</strong> @article.ProjectNumber</p>
+                                        <p><strong>Yazar:</strong> @article.ArticleAuthors</p>
+                                        <p><strong>Destekleyen Kurum:</strong> @article.SupportingInstitution</p>
+                                        <p><strong>Anahtar Kelimeler:</strong> @article.Keywords</p>
+                                        <p><strong>Referans:</strong> @article.Reference</p>
+                                        <small class="text-muted">Yayın: @article.CreatedDate.ToString("dd.MM.yyyy")</small>
+                                    </li>
+                                }}
                             </ul>
                         }
                         else

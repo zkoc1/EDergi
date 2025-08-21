@@ -1,0 +1,66 @@
+﻿@using EDergi.Domain.Entitites
+@model EDergi.Application.DTOs.ArticleCreateDto
+
+@{
+    ViewData["Title"] = "Makale Gönder";
+    var authors = ViewBag.Authors as List<Author>;
+    var magazineId = ViewBag.MagazineId;
+}
+
+<div class="container mt-5">
+    <h2>Makale Gönder</h2>
+    <form asp-action="Create" method="post">
+        <input type="hidden" asp-for="MagazineId" value="@magazineId" />
+
+        <div class="form-group">
+            <label asp-for="Title">Başlık</label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Description">Açıklama</label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Keywords">Anahtar Kelimeler</label>
+            <input asp-for="Keywords" class="form-control" />
+            <span asp-validation-for="Keywords" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="PdfUrl">PDF URL</label>
+            <input asp-for="PdfUrl" class="form-control" />
+            <span asp-validation-for="PdfUrl" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="SupportingInstitution">Destekleyen Kurum</label>
+            <input asp-for="SupportingInstitution" class="form-control" />
+            <span asp-validation-for="SupportingInstitution" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="ProjectNumber">Proje Numarası</label>
+            <input asp-for="ProjectNumber" class="form-control" />
+            <span asp-validation-for="ProjectNumber" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Reference">Referans</label>
+            <input asp-for="Reference" class="form-control" />
+            <span asp-validation-for="Reference" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="ArticleLink">Makale Linki</label>
+            <input asp-for="ArticleLink" class="form-control" />
+            <span asp-validation-for="ArticleLink" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label>Yazarlar</label>
+            @foreach (var author in authors)
+            {
+                <div>
+                    <input type="checkbox" name="AuthorIds" value="@author.Id" /> @author.Name
+                </div>
+            }
+        </div>
+        <button type="submit" class="btn btn-primary">Gönder</button>
+    </form>
+</div>

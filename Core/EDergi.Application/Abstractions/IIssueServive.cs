@@ -15,5 +15,6 @@ namespace EDergi.Application.Abstractions
 		Task<List<Issue>> GetByVolumeIdAsync(Guid volumeId);
 		Task UpdateAsync(Issue issue);
 		Task DeleteAsync(Guid id);
+		Task<List<Issue>> GetIssuesByVolumeIdAsync(Guid volumeId);
 	}
 }

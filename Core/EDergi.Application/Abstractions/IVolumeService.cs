@@ -15,6 +15,8 @@ namespace EDergi.Application.Interfaces.Services
 
 		Task<Volume> UpdateAsync(Volume volume);
 		Task<bool> DeleteAsync(Guid id);
-	
+		Task<List<Volume>> GetVolumesByMagazineIdAsync(Guid magazineId);
+
+
 	}
 }

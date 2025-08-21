@@ -1,7 +1,9 @@
-﻿using EDergi.Application.Abstractions.Services;
+﻿using EDergi.Application.Abstractions;
+using EDergi.Application.Abstractions.Services;
+using EDergi.Application.DTOs;
+using EDergi.Application.Interfaces.Services;
 using EDergi.Application.Repostories;
 using EDergi.Domain.Entitites;
-using EDergi.Application.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
@@ -15,11 +17,14 @@ namespace EDergi.Persistence.Concretes
 	{
 		private readonly IReadRepository<Article> _readRepository;
 		private readonly IWriteRepository<Article> _writeRepository;
-
-		public ArticleService(IReadRepository<Article> readRepository, IWriteRepository<Article> writeRepository)
+		private readonly IVolumeService _volumeService;
+		private readonly IIssueService _issueService;
+		public ArticleService(IReadRepository<Article> readRepository, IWriteRepository<Article> writeRepository, IVolumeService volumeService, IIssueService issueService)
 		{
 			_readRepository = readRepository;
 			_writeRepository = writeRepository;
+			_volumeService = volumeService;
+			_issueService = issueService;
 		}
 
 		public async Task<List<Article>> GetAllAsync()
@@ -127,6 +132,58 @@ namespace EDergi.Persistence.Concretes
 				await _writeRepository.RemoveAsync(article);
 			}
 		}
+		public async Task CreateAsync(ArticleCreateDto dto, Guid magazineId)
+		{
+			// Önce IssueId'yi bul
+			
+
+			var article = new Article
+			{
+				Id = Guid.NewGuid(),
+				Title = dto.Title,
+				Description = dto.Description,
+				Keywords = dto.Keywords,
+				PdfUrl = dto.PdfUrl,
+				SupportingInstitution = dto.SupportingInstitution,
+				ProjectNumber = dto.ProjectNumber,
+				Reference = dto.Reference,
+				ArticleLink = dto.ArticleLink,
+				IssueId = magazineId, // Artık doğru IssueId kullanılıyor
+				IsApproved = false,
+				CreatedDate = DateTime.UtcNow,
+				ArticleAuthors = dto.AuthorIds?.Select(authorId => new ArticleAuthor
+				{
+					AuthorId = authorId
+				}).ToList()
+			};
+
+			await _writeRepository.AddAsync(article);
+		}
+
+		public async Task<Guid> GetIssueIdByMagazineIdAsync(Guid magazineId)
+		{
+			if (magazineId == Guid.Empty)
+				throw new ArgumentException("Geçersiz dergi ID'si.");
+
+			// 1. Magazine'e ait Volume'ları çek
+			var volumes = await _volumeService.GetVolumesByMagazineIdAsync(magazineId);
+			if (volumes == null || !volumes.Any())
+				throw new Exception("Bu dergiye ait cilt bulunamadı.");
+
+			// 2. En son Volume'u seç (yıla göre sırala)
+			var latestVolume = volumes.OrderByDescending(v => v.Year).FirstOrDefault();
+
+			// 3. Volume'a ait Issue'ları çek
+			var issues = await _issueService.GetIssuesByVolumeIdAsync(latestVolume.Id);
+			if (issues == null || !issues.Any())
+				throw new Exception("Bu cilde ait sayı bulunamadı.");
+
+			// 4. En son Issue'u seç (tarihe göre sırala)
+			var latestIssue = issues.OrderByDescending(i => i.PublishDate).FirstOrDefault();
+
+			return latestIssue.Id;
+		}
+
 
 
 	}

@@ -442,7 +442,10 @@ figure {
 
 img,
 svg {
-    vertical-align: middle
+    vertical-align: middle; /* Dikey olarak ortalama */
+    display: inline-block; /* Blok özelliği kazandırır */
+    max-width: 100%; /* Genişliği sınırlar */
+    height: auto; /* Yüksekliği otomatik ayarlar */
 }
 
 table {

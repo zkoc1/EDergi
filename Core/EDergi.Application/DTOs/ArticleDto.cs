@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EDergi.Application.DTOs
 {
-	public class ArticleCreateDto
+	public class ArticleDto
 	{
 		public string Title { get; set; }
 		public string Description { get; set; } // Article'daki Description ile eşleşiyor
@@ -16,9 +16,9 @@ namespace EDergi.Application.DTOs
 		public string ProjectNumber { get; set; } // Article'dan eklendi
 		public string Reference { get; set; } // Article'dan eklendi
 		public string ArticleLink { get; set; } // Article'dan eklendi
-    	public Guid IssueId { get; set; }
+		public Guid IssueId { get; set; }
 		public bool IsApproved { get; set; }
-													 // ArticleAuthor ilişkisi için
+		// ArticleAuthor ilişkisi için
 		public List<Guid> AuthorIds { get; set; } = new List<Guid>();
 		// ArticleAuthors yerine doğrudan author ID'leri
 		public Guid MagazineId { get; set; }

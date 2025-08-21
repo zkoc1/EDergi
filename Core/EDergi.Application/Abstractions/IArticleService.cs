@@ -12,8 +12,11 @@ namespace EDergi.Application.Abstractions.Services
 		Task UpdateAsync(Article article);
 		Task DeleteAsync(Guid id);
 		//Task<List<ArticleListDto>> GetByIssueIdAsync(Guid issueId);
+		Task CreateAsync(ArticleCreateDto dto, Guid magazineId);
 		Task<List<ArticleListDto>> GetPendingAsync();
 		Task RejectAsync(Guid id);
-	
+		Task<Guid> GetIssueIdByMagazineIdAsync(Guid magazineId);
+
+
 	}
 }
